@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Shift Dashboard & Analytics</title>
+    <title>Team Shift Dashboard & Analytics Pro</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,6 +18,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; }
+        .glass-effect { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); }
+        .dark .glass-effect { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen antialiased p-4 sm:p-6 lg:p-8 transition-colors duration-300">
@@ -25,29 +27,31 @@
     <div class="max-w-7xl mx-auto space-y-6">
         
         <!-- Header Section -->
-        <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+        <header class="glass-effect border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-sm mb-1">
-                    <i class="fa-solid fa-layer-group"></i> チームシフト最適化＆アナリティクス
+                <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider mb-1">
+                    <i class="fa-solid fa-sparkles"></i> Team Operation & Shift Sync
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Shift Sync Dashboard</h1>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
+                    Shift Sync Dashboard Pro
+                </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    未選択スタート・当月自動表示・Googleカレンダー連携対応
+                    詳細テレワーク分類・安全確認プロンプト・カレンダー直接連携
                 </p>
             </div>
 
             <!-- Controls & Actions -->
             <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                 <!-- Year & Month Selector -->
-                <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
-                    <select id="selectYear" onchange="changeMonthYear()" class="bg-transparent font-bold text-sm px-2 py-1.5 outline-none cursor-pointer">
+                <div class="flex items-center bg-slate-100 dark:bg-slate-900 rounded-2xl p-1 border border-slate-200 dark:border-slate-800 shadow-inner">
+                    <select id="selectYear" onchange="changeMonthYear()" class="bg-transparent font-bold text-sm px-3 py-2 outline-none cursor-pointer">
                         <option value="2026">2026年</option>
                         <option value="2027">2027年</option>
                         <option value="2028">2028年</option>
                         <option value="2029">2029年</option>
                         <option value="2030">2030年</option>
                     </select>
-                    <select id="selectMonth" onchange="changeMonthYear()" class="bg-transparent text-indigo-600 dark:text-indigo-400 font-bold text-sm px-2 py-1.5 outline-none cursor-pointer">
+                    <select id="selectMonth" onchange="changeMonthYear()" class="bg-transparent text-indigo-600 dark:text-indigo-400 font-bold text-sm px-3 py-2 outline-none cursor-pointer">
                         <option value="1">1月</option>
                         <option value="2">2月</option>
                         <option value="3">3月</option>
@@ -63,57 +67,57 @@
                     </select>
                 </div>
 
-                <!-- Jump to Current Month Button -->
-                <button onclick="jumpToCurrentMonth()" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold px-3 py-2.5 rounded-xl transition-all flex items-center gap-1.5" title="当月に移動">
+                <!-- Jump to Current Month -->
+                <button onclick="jumpToCurrentMonth()" class="bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold px-3.5 py-2.5 rounded-2xl transition-all shadow-sm flex items-center gap-1.5" title="当月にジャンプ">
                     <i class="fa-solid fa-calendar-day"></i> 当月へ戻る
                 </button>
 
-                <!-- Theme Toggle Button -->
-                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300" title="ダークモード切り替え">
+                <!-- Theme Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-2xl bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 shadow-sm" title="モード切替">
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                 </button>
 
-                <button onclick="shareToLine()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-4 py-2.5 rounded-xl text-sm shadow-sm transition-all flex items-center gap-2">
+                <button onclick="shareToLine()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2.5 rounded-2xl text-sm shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2">
                     <i class="fa-brands fa-line text-lg"></i> LINE共有
                 </button>
-                <button onclick="bulkRegisterGCal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 rounded-xl text-sm shadow-sm transition-all flex items-center gap-2">
+                <button onclick="bulkRegisterGCal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2.5 rounded-2xl text-sm shadow-lg shadow-indigo-600/20 transition-all flex items-center gap-2">
                     <i class="fa-solid fa-calendar-check"></i> カレンダー一括登録
                 </button>
             </div>
         </header>
 
-        <!-- Main Layout Grid (Summary Left [5 cols], Table Right [7 cols]) -->
+        <!-- Main Layout Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             <!-- Left Side: Monthly Work Summary & Donut Chart (5 Cols) -->
             <div class="lg:col-span-5 space-y-6">
-                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
-                    <h2 class="text-lg font-bold flex items-center gap-2">
+                <div class="glass-effect border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-6">
+                    <h2 class="text-base font-bold flex items-center gap-2">
                         <i class="fa-solid fa-chart-pie text-indigo-600 dark:text-indigo-400"></i> <span id="summaryTitleLabel">2026年11月</span> 月次ワークサマリー
                     </h2>
 
                     <!-- 4 Summary Metric Cards -->
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4 shadow-sm">
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm">
                             <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">総出勤日数</span>
-                            <div id="statWorkDays" class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">0日</div>
+                            <div id="statWorkDays" class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">0日</div>
                         </div>
-                        <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4 shadow-sm">
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm">
                             <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">概算総労働時間</span>
-                            <div id="statWorkHours" class="text-2xl font-bold mt-1">0h</div>
+                            <div id="statWorkHours" class="text-2xl font-extrabold mt-1">0h</div>
                         </div>
-                        <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4 shadow-sm">
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm">
                             <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">夜勤回数</span>
-                            <div id="statNightCount" class="text-2xl font-bold mt-1">0回</div>
+                            <div id="statNightCount" class="text-2xl font-extrabold mt-1">0回</div>
                         </div>
-                        <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4 shadow-sm">
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm">
                             <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">有休取得</span>
-                            <div id="statPaidLeave" class="text-2xl font-bold mt-1">0日</div>
+                            <div id="statPaidLeave" class="text-2xl font-extrabold mt-1">0日</div>
                         </div>
                     </div>
 
                     <!-- Donut Chart Card -->
-                    <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4 shadow-sm flex flex-col items-center">
+                    <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm flex flex-col items-center">
                         <div class="w-full max-h-[220px] flex justify-center">
                             <canvas id="shiftDonutChart"></canvas>
                         </div>
@@ -121,10 +125,10 @@
 
                     <!-- Duplicate Guard Reset & Info -->
                     <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                        <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                             <i class="fa-solid fa-shield-halved text-emerald-500"></i> 二重登録ガード有効
                         </span>
-                        <button onclick="resetRegisteredStatus()" class="text-xs text-rose-500 hover:text-rose-600 font-medium underline">
+                        <button onclick="resetRegisteredStatus()" class="text-xs text-rose-500 hover:text-rose-600 font-semibold underline transition-colors">
                             登録履歴リセット
                         </button>
                     </div>
@@ -133,35 +137,37 @@
 
             <!-- Right Side: Shift Table & Direct Editor (7 Cols) -->
             <div class="lg:col-span-7 space-y-6">
-                <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                <div class="glass-effect border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-xl">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                        <h2 class="text-lg font-bold flex items-center gap-2">
+                        <h2 class="text-base font-bold flex items-center gap-2">
                             <i class="fa-solid fa-calendar-days text-indigo-600 dark:text-indigo-400"></i> シフト一覧 & ダッシュボード直接編集
                         </h2>
-                        <select id="filterType" onchange="renderTable()" class="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500">
+                        <select id="filterType" onchange="renderTable()" class="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
                             <option value="all">すべてのシフト</option>
                             <option value="未選択">未選択</option>
                             <option value="早">早番</option>
                             <option value="遅">遅番</option>
                             <option value="夜">夜勤</option>
                             <option value="明け">明け</option>
-                            <option value="各種テレワーク">テレワーク</option>
+                            <option value="早（テレワーク）">早(テレワーク)</option>
+                            <option value="遅（テレワーク）">遅(テレワーク)</option>
+                            <option value="夜（テレワーク）">夜(テレワーク)</option>
                             <option value="休み">休み</option>
                             <option value="有休">有休</option>
                         </select>
                     </div>
 
-                    <div class="overflow-x-auto max-h-[500px] rounded-xl border border-slate-200 dark:border-slate-800">
+                    <div class="overflow-x-auto max-h-[520px] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner">
                         <table class="w-full text-left border-collapse text-sm">
-                            <thead class="bg-slate-50 dark:bg-slate-800 sticky top-0 text-slate-600 dark:text-slate-300 text-xs uppercase font-semibold z-10">
+                            <thead class="bg-slate-50 dark:bg-slate-900/90 sticky top-0 text-slate-600 dark:text-slate-300 text-xs uppercase font-semibold z-10 backdrop-blur-md">
                                 <tr>
-                                    <th class="p-3">日付</th>
-                                    <th class="p-3">曜日</th>
-                                    <th class="p-3">シフト種別 (変更可)</th>
-                                    <th class="p-3 text-center">Googleカレンダー</th>
+                                    <th class="p-3.5">日付</th>
+                                    <th class="p-3.5">曜日</th>
+                                    <th class="p-3.5">シフト種別 (変更可)</th>
+                                    <th class="p-3.5 text-center">Googleカレンダー</th>
                                 </tr>
                             </thead>
-                            <tbody id="shiftTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200 text-xs sm:text-sm">
+                            <tbody id="shiftTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200 text-xs sm:text-sm">
                                 <!-- Dynamic Render -->
                             </tbody>
                         </table>
@@ -181,12 +187,13 @@
             "遅（13:00～22:00）",
             "夜（21:30～8:30）",
             "明け",
-            "各種テレワーク",
+            "早（テレワーク）",
+            "遅（テレワーク）",
+            "夜（テレワーク）",
             "休み",
             "有休"
         ];
 
-        // Ensure every new month starts with "未選択"
         function generateDefaultMonthData(year, month) {
             const daysInMonth = new Date(year, month, 0).getDate();
             const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -200,7 +207,6 @@
             return data;
         }
 
-        // Set current real date as default initial view
         const now = new Date();
         let currentYear = now.getFullYear();
         let currentMonth = now.getMonth() + 1;
@@ -280,7 +286,7 @@
                 const isRegistered = registeredIds.includes(shiftId);
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors";
+                tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors";
                 
                 let optionsHtml = '';
                 shiftTypesList.forEach(st => {
@@ -289,30 +295,30 @@
                 });
 
                 let badgeClass = "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
-                if(item.type.includes('早')) badgeClass = "bg-amber-100 text-amber-800 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800";
-                else if(item.type.includes('遅')) badgeClass = "bg-orange-100 text-orange-800 border border-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-800";
-                else if(item.type.includes('夜')) badgeClass = "bg-indigo-100 text-indigo-800 border border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800";
+                if(item.type.includes('早（8:00')) badgeClass = "bg-amber-100 text-amber-800 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800";
+                else if(item.type.includes('遅（13:00')) badgeClass = "bg-orange-100 text-orange-800 border border-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-800";
+                else if(item.type.includes('夜（21:30')) badgeClass = "bg-indigo-100 text-indigo-800 border border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800";
                 else if(item.type.includes('明け')) badgeClass = "bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800";
                 else if(item.type.includes('テレワーク')) badgeClass = "bg-cyan-100 text-cyan-800 border border-cyan-200 dark:bg-cyan-950/50 dark:text-cyan-300 dark:border-cyan-800";
                 else if(item.type.includes('有休')) badgeClass = "bg-pink-100 text-pink-800 border border-pink-200 dark:bg-pink-950/50 dark:text-pink-300 dark:border-pink-800";
                 else if(item.type.includes('休み')) badgeClass = "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300";
 
                 tr.innerHTML = `
-                    <td class="p-3 font-semibold">${currentMonth}月 ${item.day}日</td>
-                    <td class="p-3 text-slate-500 dark:text-slate-400">${item.week}</td>
-                    <td class="p-3">
-                        <select onchange="updateShiftType(${item.day}, this.value)" class="text-xs font-medium px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 ${badgeClass} cursor-pointer">
+                    <td class="p-3.5 font-semibold">${currentMonth}月 ${item.day}日</td>
+                    <td class="p-3.5 text-slate-500 dark:text-slate-400">${item.week}</td>
+                    <td class="p-3.5">
+                        <select onchange="updateShiftType(${item.day}, this.value)" class="text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 ${badgeClass} cursor-pointer shadow-sm">
                             ${optionsHtml}
                         </select>
                     </td>
-                    <td class="p-3 text-center">
+                    <td class="p-3.5 text-center">
                         ${item.type === '未選択' ? 
                             `<span class="text-xs text-slate-400 dark:text-slate-500">-</span>` :
                             (isRegistered ? 
                                 `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 rounded-lg text-xs font-semibold border border-emerald-200 dark:border-emerald-800">
                                     <i class="fa-solid fa-check-circle"></i> 登録済
                                  </span>` :
-                                `<button onclick="registerSingle('${shiftId}', '${item.type}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 text-xs font-medium transition-all shadow-sm rounded-lg flex items-center justify-center gap-1 mx-auto">
+                                `<button onclick="registerSingle('${shiftId}', '${item.type}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 text-xs font-semibold transition-all shadow-sm rounded-xl flex items-center justify-center gap-1 mx-auto">
                                     <i class="fa-regular fa-calendar-plus"></i> 追加
                                  </button>`
                             )
@@ -333,13 +339,15 @@
             let nightCount = 0;
             let paidLeaveCount = 0;
 
-            let counts = { "未選択": 0, "早": 0, "遅": 0, "夜": 0, "明け": 0, "テレワーク": 0, "休み": 0, "有休": 0 };
+            let counts = { "未選択": 0, "早": 0, "遅": 0, "夜": 0, "明け": 0, "早テレ": 0, "遅テレ": 0, "夜テレ": 0, "休み": 0, "有休": 0 };
 
             shifts.forEach(s => {
-                if(s.type.includes('早')) { workDays++; workHours += 8; counts["早"]++; }
-                else if(s.type.includes('遅')) { workDays++; workHours += 8; counts["遅"]++; }
-                else if(s.type.includes('夜')) { workDays++; workHours += 9; nightCount++; counts["夜"]++; }
-                else if(s.type.includes('テレワーク')) { workDays++; workHours += 8; counts["テレワーク"]++; }
+                if(s.type.includes('早（8:00')) { workDays++; workHours += 8; counts["早"]++; }
+                else if(s.type.includes('遅（13:00')) { workDays++; workHours += 8; counts["遅"]++; }
+                else if(s.type.includes('夜（21:30')) { workDays++; workHours += 9; nightCount++; counts["夜"]++; }
+                else if(s.type.includes('早（テレワーク）')) { workDays++; workHours += 8; counts["早テレ"]++; }
+                else if(s.type.includes('遅（テレワーク）')) { workDays++; workHours += 8; counts["遅テレ"]++; }
+                else if(s.type.includes('夜（テレワーク）')) { workDays++; workHours += 9; nightCount++; counts["夜テレ"]++; }
                 else if(s.type.includes('明け')) { counts["明け"]++; }
                 else if(s.type.includes('有休')) { paidLeaveCount++; counts["有休"]++; }
                 else if(s.type.includes('休み')) { counts["休み"]++; }
@@ -352,7 +360,7 @@
             document.getElementById('statPaidLeave').innerText = paidLeaveCount + "日";
 
             const ctx = document.getElementById('shiftDonutChart').getContext('2d');
-            const chartData = [counts["早"], counts["遅"], counts["夜"], counts["明け"], counts["テレワーク"], counts["休み"], counts["有休"], counts["未選択"]];
+            const chartData = [counts["早"], counts["遅"], counts["夜"], counts["明け"], counts["早テレ"], counts["遅テレ"], counts["夜テレ"], counts["休み"], counts["有休"], counts["未選択"]];
 
             if(donutChartInstance) { donutChartInstance.destroy(); }
 
@@ -361,12 +369,12 @@
             donutChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['早番', '遅番', '夜勤', '明け', 'テレワーク', '休み', '有休', '未選択'],
+                    labels: ['早番', '遅番', '夜勤', '明け', '早テレ', '遅テレ', '夜テレ', '休み', '有休', '未選択'],
                     datasets: [{
                         data: chartData,
-                        backgroundColor: ['#f59e0b', '#f97316', '#4f46e5', '#10b981', '#06b6d4', '#cbd5e1', '#ec4899', '#94a3b8'],
+                        backgroundColor: ['#f59e0b', '#f97316', '#4f46e5', '#10b981', '#06b6d4', '#0ea5e9', '#6366f1', '#cbd5e1', '#ec4899', '#94a3b8'],
                         borderWidth: 2,
-                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                        borderColor: isDark ? '#0f172a' : '#ffffff'
                     }]
                 },
                 options: {
@@ -376,8 +384,8 @@
                         legend: {
                             position: 'right',
                             labels: { 
-                                boxWidth: 12, 
-                                font: { size: 11, family: 'Plus Jakarta Sans' },
+                                boxWidth: 10, 
+                                font: { size: 10, family: 'Plus Jakarta Sans' },
                                 color: isDark ? '#cbd5e1' : '#475569'
                             }
                         }
@@ -406,7 +414,11 @@
             renderTable();
         }
 
+        // Bulk register with period confirmation prompt
         function bulkRegisterGCal() {
+            const confirmed = confirm(`【実行前の確認】\n\n【${currentYear}年${currentMonth}月】の未登録シフトをGoogleカレンダーに一括登録します。\n本当によろしいですか？`);
+            if (!confirmed) return;
+
             const shifts = getCurrentShifts();
             const registeredIds = getRegisteredIds();
             let newRegisterCount = 0;
@@ -432,10 +444,20 @@
             renderTable();
 
             if (newRegisterCount > 0) {
-                alert(`${newRegisterCount}件のシフトをGoogleカレンダーに直接登録しました！（二重登録ガード適用済み）`);
+                alert(`${currentYear}年${currentMonth}月の新着シフト ${newRegisterCount}件をGoogleカレンダーに登録しました！`);
             } else {
-                alert("【二重登録ガード】新しく登録する対象のシフト（すべて登録済み、または未選択）はありません。");
+                alert("【二重登録ガード】新しく登録する対象のシフトはありません。");
             }
+        }
+
+        // Reset with period confirmation prompt
+        function resetRegisteredStatus() {
+            const confirmed = confirm(`【実行前の確認】\n\n【${currentYear}年${currentMonth}月】のGoogleカレンダー登録履歴（二重登録ガードの記録）をリセットします。\n\n※この操作を行うと、この月の全シフトが未登録の状態になります。実行しますか？`);
+            if (!confirmed) return;
+
+            localStorage.removeItem(getRegisteredKey());
+            renderTable();
+            alert(`${currentYear}年${currentMonth}月の登録履歴をリセットしました。`);
         }
 
         function toggleDarkMode() {
@@ -464,23 +486,13 @@
             window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
         }
 
-        function resetRegisteredStatus() {
-            if(confirm(`${currentYear}年${currentMonth}月のカレンダー登録済み履歴をリセットしますか？`)) {
-                localStorage.removeItem(getRegisteredKey());
-                renderTable();
-                alert("リセットしました。");
-            }
-        }
-
         window.onload = function() {
-            // Default to Light Mode
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
                 document.documentElement.classList.add('dark');
                 document.getElementById('themeIcon').className = "fa-solid fa-sun";
             }
             
-            // Set selectors to current real date
             document.getElementById('selectYear').value = currentYear;
             document.getElementById('selectMonth').value = currentMonth;
             document.getElementById('summaryTitleLabel').innerText = `${currentYear}年${currentMonth}月`;
