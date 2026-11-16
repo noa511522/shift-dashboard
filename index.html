@@ -65,7 +65,7 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                            Team Operation Suite
+                            Team Cloud Sync Suite
                         </span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-0.5">
@@ -136,6 +136,10 @@
                             </span>
                             <span><span id="summaryTitleLabel" class="text-indigo-600 dark:text-indigo-400">2026年11月</span> 月次ワークサマリー</span>
                         </h2>
+                        <!-- Cloud Sync Status Indicator -->
+                        <span id="syncStatusBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-500 flex items-center gap-1.5 border border-slate-200 dark:border-slate-800">
+                            <i class="fa-solid fa-cloud text-slate-400"></i> 同期待機中
+                        </span>
                     </div>
 
                     <!-- Metric Cards Grid -->
@@ -342,6 +346,9 @@
 
     <!-- JavaScript Logic -->
     <script>
+        // 発行されたGoogle Apps ScriptのウェブアプリURL
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxz5M4uHAE4suh6X8v-N9S_5phSkv1wHc2cvYlG6gvgV6lbDHLyD6gTfJSsT7CTabfn/exec";
+
         const shiftTypesList = [
             "未選択",
             "早（8:00～17:00）",
@@ -407,23 +414,90 @@
         let currentYear = now.getFullYear();
         let currentMonth = now.getMonth() + 1;
         let donutChartInstance = null;
+        
+        // メモリ上のシフトデータ（クラウドと同期）
+        let shiftCache = {}; 
 
-        function getStorageKey() {
-            return `shifts_${currentYear}_${currentMonth}`;
+        function getYearMonthKey(y, m) {
+            return `${y}-${String(m).padStart(2, '0')}`;
+        }
+
+        // クラウド（スプレッドシート）からデータを読み込む
+        async function fetchShiftsFromCloud() {
+            setSyncStatus("loading", "クラウド読込中...");
+            try {
+                const res = await fetch(GAS_API_URL);
+                const data = await res.json();
+                
+                shiftCache = {};
+                data.forEach(item => {
+                    if (!shiftCache[item.yearMonth]) {
+                        shiftCache[item.yearMonth] = {};
+                    }
+                    shiftCache[item.yearMonth][item.day] = item.type;
+                });
+
+                setSyncStatus("synced", "クラウド同期完了");
+            } catch (err) {
+                console.error("Cloud fetch error:", err);
+                setSyncStatus("error", "同期エラー (オフライン)");
+            }
+            renderTable();
+        }
+
+        // クラウド（スプレッドシート）へデータを保存する
+        async function saveShiftsToCloud(targetY, targetM, shiftsArray) {
+            setSyncStatus("loading", "保存中...");
+            const ymKey = getYearMonthKey(targetY, targetM);
+
+            const payload = {
+                yearMonth: ymKey,
+                shifts: shiftsArray.map(s => ({ day: s.day, type: s.type }))
+            };
+
+            try {
+                await fetch(GAS_API_URL, {
+                    method: "POST",
+                    mode: "no-cors", // CORS制限回避
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+
+                setSyncStatus("synced", "クラウド同期完了");
+            } catch (err) {
+                console.error("Cloud save error:", err);
+                setSyncStatus("error", "保存失敗");
+            }
+        }
+
+        function setSyncStatus(status, text) {
+            const badge = document.getElementById('syncStatusBadge');
+            if (status === "loading") {
+                badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center gap-1.5 border border-amber-200 dark:border-amber-800 animate-pulse";
+                badge.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> ${text}`;
+            } else if (status === "synced") {
+                badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 border border-emerald-200 dark:border-emerald-800";
+                badge.innerHTML = `<i class="fa-solid fa-cloud-check text-emerald-500"></i> ${text}`;
+            } else {
+                badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center gap-1.5 border border-rose-200 dark:border-rose-800";
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${text}`;
+            }
         }
 
         function getCurrentShifts() {
-            const stored = localStorage.getItem(getStorageKey());
-            if (stored) {
-                let parsed = JSON.parse(stored);
-                parsed.forEach(item => {
-                    item.holiday = getJapaneseHoliday(currentYear, currentMonth, item.day);
-                });
-                return parsed;
+            const ymKey = getYearMonthKey(currentYear, currentMonth);
+            const defaultData = generateDefaultMonthData(currentYear, currentMonth);
+
+            if (!shiftCache[ymKey]) {
+                return defaultData;
             }
-            const initial = generateDefaultMonthData(currentYear, currentMonth);
-            localStorage.setItem(getStorageKey(), JSON.stringify(initial));
-            return initial;
+
+            return defaultData.map(item => {
+                if (shiftCache[ymKey][item.day]) {
+                    item.type = shiftCache[ymKey][item.day];
+                }
+                return item;
+            });
         }
 
         function updateLabels() {
@@ -472,15 +546,20 @@
             updateSummaryAndChart();
         }
 
+        // シフト変更時にクラウド（スプレッドシート）へ即時自動保存
         function updateShiftType(day, newType) {
-            let shifts = getCurrentShifts();
-            const idx = shifts.findIndex(s => s.day === day);
-            if (idx !== -1) {
-                shifts[idx].type = newType;
-                localStorage.setItem(getStorageKey(), JSON.stringify(shifts));
-                renderTable();
-                updateSummaryAndChart();
+            const ymKey = getYearMonthKey(currentYear, currentMonth);
+            if (!shiftCache[ymKey]) {
+                shiftCache[ymKey] = {};
             }
+            shiftCache[ymKey][day] = newType;
+
+            renderTable();
+            updateSummaryAndChart();
+
+            // クラウドへ送信
+            const currentShifts = getCurrentShifts();
+            saveShiftsToCloud(currentYear, currentMonth, currentShifts);
         }
 
         function renderTable() {
@@ -728,7 +807,9 @@
             document.getElementById('selectYear').value = currentYear;
             document.getElementById('selectMonth').value = currentMonth;
             updateLabels();
-            renderTable();
+
+            // 起動時にスプレッドシートから最新データを取得
+            fetchShiftsFromCloud();
         };
     </script>
 </body>
