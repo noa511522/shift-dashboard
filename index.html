@@ -282,13 +282,11 @@
         
         // 2026年・2027年 祝日マスター（完全版）
         const HOLIDAY_MASTER = {
-            // 2026年
             "2026-1-1": "元日", "2026-1-12": "成人の日", "2026-2-11": "建国記念の日", "2026-2-23": "天皇誕生日",
             "2026-3-20": "春分の日", "2026-4-29": "昭和の日", "2026-5-3": "憲法記念日", "2026-5-4": "みどりの日",
             "2026-5-5": "こどもの日", "2026-5-6": "振替休日", "2026-7-20": "海の日", "2026-8-11": "山の日",
             "2026-9-21": "敬老の日", "2026-9-22": "国民の休日", "2026-9-23": "秋分の日", "2026-10-12": "スポーツの日",
             "2026-11-3": "文化の日", "2026-11-23": "勤労感謝の日",
-            // 2027年
             "2027-1-1": "元日", "2027-1-11": "成人の日", "2027-2-11": "建国記念の日", "2027-2-23": "天皇誕生日",
             "2027-3-21": "春分の日", "2027-3-22": "振替休日", "2027-4-29": "昭和の日", "2027-5-3": "憲法記念日",
             "2027-5-4": "みどりの日", "2027-5-5": "こどもの日", "2027-7-19": "海の日", "2027-8-11": "山の日",
@@ -476,13 +474,16 @@
                 cursor.setDate(cursor.getDate() + 1);
             }
 
+            // 指定した月日の範囲をタイトルにする（例：11/16〜12/15シフト）
+            const periodTitle = `${startM}/${startD} 〜 ${endM}/${endD} シフト`;
+
             let printWin = window.open('', '_blank');
             let htmlContent = `
                 <!DOCTYPE html>
                 <html lang="ja">
                 <head>
                     <meta charset="UTF-8">
-                    <title>シフトスケジュール表 (${startM}月${startD}日 〜 ${endM}月${endD}日)</title>
+                    <title>${periodTitle}</title>
                     <script src="https://cdn.tailwindcss.com"><\/script>
                     <style>
                         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@500;700;900&display=swap');
@@ -526,17 +527,17 @@
                     <div class="no-print flex justify-between items-center bg-slate-900 text-white p-4 rounded-2xl shadow-xl">
                         <div>
                             <h2 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-crown text-amber-400"></i> リッチPDFプレビュー</h2>
-                            <p class="text-xs text-slate-400">外枠・格子線・バッジが整えられたプロ仕様のレイアウトです。</p>
+                            <p class="text-xs text-slate-400">外枠・格子線・すっきりとしたテキスト表示のレイアウトです。</p>
                         </div>
                         <button onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-lg transition flex items-center gap-2"><i class="fa-solid fa-print"></i> 今すぐPDF保存・印刷</button>
                     </div>
 
                     <div class="print-paper p-8 space-y-6">
                         <div class="flex justify-between items-end border-b-2 border-slate-200 pb-5">
-                            <div class="space-y-1.5">
+                            <div class="space-y-1">
                                 <span class="text-[10px] font-black uppercase tracking-widest text-indigo-700 bg-indigo-100/80 px-3 py-1 rounded-md border border-indigo-200">Official Shift Schedule</span>
-                                <h1 class="text-2xl font-black text-slate-900 tracking-tight">チーム シフトスケジュール表</h1>
-                                <p class="text-xs font-bold text-slate-600">対象期間：${currentYear}年 ${startM}月${startD}日 〜 ${endM}月${endD}日</p>
+                                <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">${periodTitle}</h1>
+                                <p class="text-xs font-bold text-slate-500">対象期間：${currentYear}年 ${startM}月${startD}日 〜 ${endM}月${endD}日</p>
                             </div>
                             <div class="text-right bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200">
                                 <div class="text-[10px] font-extrabold text-slate-400">発行日時</div>
@@ -554,29 +555,21 @@
             function buildTableRows(items) {
                 let rows = '';
                 items.forEach(item => {
-                    let badgeStyle = "bg-slate-100 text-slate-700 border-slate-300";
-                    if (item.rawType.includes('早')) badgeStyle = "bg-amber-50 text-amber-900 border-amber-300 font-extrabold";
-                    else if (item.rawType.includes('遅')) badgeStyle = "bg-orange-50 text-orange-900 border-orange-300 font-extrabold";
-                    else if (item.rawType.includes('夜')) badgeStyle = "bg-indigo-50 text-indigo-900 border-indigo-300 font-extrabold";
-                    else if (item.rawType.includes('明け')) badgeStyle = "bg-emerald-50 text-emerald-900 border-emerald-300 font-extrabold";
-                    else if (item.rawType.includes('有休')) badgeStyle = "bg-pink-50 text-pink-900 border-pink-300 font-extrabold";
-                    else if (item.rawType.includes('休み')) badgeStyle = "bg-slate-100 text-slate-700 border-slate-300 font-bold";
-                    if (item.rawType.includes('テレワーク')) badgeStyle = "bg-cyan-50 text-cyan-900 border-cyan-300 font-extrabold";
-
                     let dayColor = "text-slate-800";
                     if (item.holiday || item.week === "日") dayColor = "text-rose-600 font-black";
                     else if (item.week === "土") dayColor = "text-sky-600 font-black";
 
+                    // 日付と曜日の後に、祝日があれば次の行に折り返して表示
                     let dateDisplay = `${item.month}/${item.day} <span class="${dayColor}">(${item.week})</span>`;
                     if (item.holiday) {
-                        dateDisplay += ` <span class="text-[9px] bg-rose-500 text-white px-1 py-0.5 rounded">${item.holiday}</span>`;
+                        dateDisplay += `<div class="text-[10px] font-bold text-rose-600 mt-0.5 leading-tight">${item.holiday}</div>`;
                     }
 
                     rows += `
                         <tr>
-                            <td class="font-extrabold text-slate-900 text-center bg-slate-50/50" style="width: 30%;">${dateDisplay}</td>
-                            <td class="text-center" style="width: 40%;"><span class="px-2 py-0.5 rounded border text-[11px] ${badgeStyle} inline-block shadow-sm">${item.label}</span></td>
-                            <td class="text-right font-bold text-slate-600" style="width: 30%;">${item.time}</td>
+                            <td class="font-extrabold text-slate-900 text-center bg-slate-50/50 align-middle" style="width: 32%;">${dateDisplay}</td>
+                            <td class="text-center font-bold text-slate-800 align-middle" style="width: 38%;">${item.label}</td>
+                            <td class="text-right font-semibold text-slate-600 align-middle" style="width: 30%;">${item.time}</td>
                         </tr>
                     `;
                 });
