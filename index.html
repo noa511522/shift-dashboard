@@ -36,22 +36,25 @@
                     Shift Sync Dashboard Pro
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    土日祝自動色分け（強調版）・祝日名表示・テレワーク個別対応
+                    本格ワークサマリー・祝日完全対応・月切替ボタン搭載
                 </p>
             </div>
 
             <!-- Controls & Actions -->
             <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-                <!-- Year & Month Selector -->
-                <div class="flex items-center bg-slate-100 dark:bg-slate-900 rounded-2xl p-1 border border-slate-200 dark:border-slate-800 shadow-inner">
-                    <select id="selectYear" onchange="changeMonthYear()" class="bg-transparent font-bold text-sm px-3 py-2 outline-none cursor-pointer">
+                <!-- Year & Month Selector with Arrow Buttons -->
+                <div class="flex items-center bg-slate-100 dark:bg-slate-900 rounded-2xl p-1 border border-slate-200 dark:border-slate-800 shadow-inner gap-1">
+                    <button onclick="changeMonthRelative(-1)" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-600 dark:text-slate-300" title="前月へ">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <select id="selectYear" onchange="changeMonthYear()" class="bg-transparent font-bold text-sm px-2 py-2 outline-none cursor-pointer">
                         <option value="2026">2026年</option>
                         <option value="2027">2027年</option>
                         <option value="2028">2028年</option>
                         <option value="2029">2029年</option>
                         <option value="2030">2030年</option>
                     </select>
-                    <select id="selectMonth" onchange="changeMonthYear()" class="bg-transparent text-indigo-600 dark:text-indigo-400 font-bold text-sm px-3 py-2 outline-none cursor-pointer">
+                    <select id="selectMonth" onchange="changeMonthYear()" class="bg-transparent text-indigo-600 dark:text-indigo-400 font-bold text-sm px-2 py-2 outline-none cursor-pointer">
                         <option value="1">1月</option>
                         <option value="2">2月</option>
                         <option value="3">3月</option>
@@ -65,6 +68,9 @@
                         <option value="11">11月</option>
                         <option value="12">12月</option>
                     </select>
+                    <button onclick="changeMonthRelative(1)" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-600 dark:text-slate-300" title="次月へ">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
                 </div>
 
                 <!-- Jump to Current Month -->
@@ -89,30 +95,38 @@
         <!-- Main Layout Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Left Side: Monthly Work Summary & Donut Chart (5 Cols) -->
+            <!-- Left Side: Professional Monthly Work Summary & Donut Chart (5 Cols) -->
             <div class="lg:col-span-5 space-y-6">
                 <div class="glass-effect border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-6">
                     <h2 class="text-base font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-chart-pie text-indigo-600 dark:text-indigo-400"></i> <span id="summaryTitleLabel">2026年11月</span> 月次ワークサマリー
+                        <i class="fa-solid fa-chart-pie text-indigo-600 dark:text-indigo-400"></i> <span id="summaryTitleLabel">2026年11月</span> 本格月次ワークサマリー
                     </h2>
 
-                    <!-- 4 Summary Metric Cards -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm">
-                            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">総出勤日数</span>
-                            <div id="statWorkDays" class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">0日</div>
+                    <!-- Pro 6 Summary Metric Cards Grid -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-3.5 shadow-sm">
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">総出勤日数</span>
+                            <div id="statWorkDays" class="text-xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5">0日</div>
                         </div>
-                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm">
-                            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">概算総労働時間</span>
-                            <div id="statWorkHours" class="text-2xl font-extrabold mt-1">0h</div>
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-3.5 shadow-sm">
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">概算総労働時間</span>
+                            <div id="statWorkHours" class="text-xl font-extrabold mt-0.5">0h</div>
                         </div>
-                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm">
-                            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">夜勤回数</span>
-                            <div id="statNightCount" class="text-2xl font-extrabold mt-1">0回</div>
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-3.5 shadow-sm">
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">夜勤回数</span>
+                            <div id="statNightCount" class="text-xl font-extrabold text-indigo-500 mt-0.5">0回</div>
                         </div>
-                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm">
-                            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">有休取得</span>
-                            <div id="statPaidLeave" class="text-2xl font-extrabold mt-1">0日</div>
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-3.5 shadow-sm">
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">テレワーク日数</span>
+                            <div id="statTeleworkCount" class="text-xl font-extrabold text-cyan-600 dark:text-cyan-400 mt-0.5">0日</div>
+                        </div>
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-3.5 shadow-sm">
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">有休取得</span>
+                            <div id="statPaidLeave" class="text-xl font-extrabold text-pink-500 mt-0.5">0日</div>
+                        </div>
+                        <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl p-3.5 shadow-sm">
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">公休・休み</span>
+                            <div id="statOffCount" class="text-xl font-extrabold text-slate-600 dark:text-slate-300 mt-0.5">0日</div>
                         </div>
                     </div>
 
@@ -194,10 +208,10 @@
             "有休"
         ];
 
-        // 確実な日本の祝日判定ロジック (2026年〜2030年対応)
+        // 完璧な日本の祝日判定関数
         function getJapaneseHoliday(year, month, day) {
             const d = new Date(year, month - 1, day);
-            const w = d.getDay();
+            const w = d.getDay(); // 0:日, 1:月...
 
             // 固定祝日
             if (month === 1 && day === 1) return "元日";
@@ -214,10 +228,15 @@
             if (month === 11 && day === 3) return "文化の日";
             if (month === 11 && day === 23) return "勤労感謝の日";
 
-            // 春分の日簡易計算
+            // 春分の日計算（2026〜2030年）
             if (month === 3) {
-                let vernalEquinox = (year === 2026 || year === 2030) ? 20 : 21;
-                if (day === vernalEquinox) return "春分の日";
+                let vernal = (year === 2026 || year === 2030) ? 20 : 21;
+                if (day === vernal) return "春分の日";
+            }
+            // 秋分の日計算
+            if (month === 9) {
+                let autumn = (year === 2027) ? 23 : 22;
+                if (day === autumn) return "秋分の日";
             }
 
             // ハッピーマンデー制度
@@ -227,10 +246,10 @@
             if (month === 9 && w === 1 && weekNum === 3) return "敬老の日";
             if (month === 10 && w === 1 && weekNum === 2 && year !== 2026) return "スポーツの日";
 
-            // 振替休日判定
+            // 振替休日判定（前日が日曜かつ祝日の場合）
             if (w === 1) {
-                const prevDay = new Date(year, month - 1, day - 1);
-                if (getJapaneseHoliday(year, prevDay.getMonth() + 1, prevDay.getDate())) {
+                const prevDate = new Date(year, month - 1, day - 1);
+                if (getJapaneseHoliday(prevDate.getFullYear(), prevDate.getMonth() + 1, prevDate.getDate())) {
                     return "振替休日";
                 }
             }
@@ -292,6 +311,26 @@
             updateSummaryAndChart();
         }
 
+        function changeMonthRelative(direction) {
+            currentMonth += direction;
+            if (currentMonth > 12) {
+                currentMonth = 1;
+                currentYear++;
+            } else if (currentMonth < 1) {
+                currentMonth = 12;
+                currentYear--;
+            }
+
+            if (currentYear > 2030) { currentYear = 2030; currentMonth = 12; }
+            if (currentYear < 2026) { currentYear = 2026; currentMonth = 1; }
+
+            document.getElementById('selectYear').value = currentYear;
+            document.getElementById('selectMonth').value = currentMonth;
+            document.getElementById('summaryTitleLabel').innerText = `${currentYear}年${currentMonth}月`;
+            renderTable();
+            updateSummaryAndChart();
+        }
+
         function jumpToCurrentMonth() {
             const realNow = new Date();
             currentYear = realNow.getFullYear();
@@ -333,18 +372,17 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors";
                 
-                // 強調された土日祝の色分けロジック
                 let rowBgClass = "";
                 let weekColorClass = "text-slate-500 dark:text-slate-400";
                 
                 if (item.holiday) {
-                    rowBgClass = "bg-rose-100/80 dark:bg-rose-950/40 font-semibold";
+                    rowBgClass = "bg-rose-100/90 dark:bg-rose-950/50 font-semibold";
                     weekColorClass = "text-rose-700 dark:text-rose-400 font-extrabold";
                 } else if (item.week === "日") {
-                    rowBgClass = "bg-rose-50/70 dark:bg-rose-950/20";
+                    rowBgClass = "bg-rose-50/80 dark:bg-rose-950/25";
                     weekColorClass = "text-rose-600 dark:text-rose-400 font-extrabold";
                 } else if (item.week === "土") {
-                    rowBgClass = "bg-sky-100/70 dark:bg-sky-950/25";
+                    rowBgClass = "bg-sky-100/80 dark:bg-sky-950/30";
                     weekColorClass = "text-sky-700 dark:text-sky-400 font-extrabold";
                 }
 
@@ -354,7 +392,7 @@
 
                 let weekDisplay = `(${item.week})`;
                 if (item.holiday) {
-                    weekDisplay = `<span class="inline-flex items-center gap-1.5"><span class="${weekColorClass}">( ${item.week} )</span> <span class="text-[11px] bg-rose-500 text-white dark:bg-rose-700 dark:text-rose-100 px-2 py-0.5 rounded-md font-bold shadow-sm">${item.holiday}</span></span>`;
+                    weekDisplay = `<span class="inline-flex items-center gap-1.5"><span class="${weekColorClass}">( ${item.week} )</span> <span class="text-[11px] bg-rose-600 text-white dark:bg-rose-700 dark:text-rose-100 px-2 py-0.5 rounded-md font-bold shadow-sm">${item.holiday}</span></span>`;
                 }
 
                 let optionsHtml = '';
@@ -406,27 +444,31 @@
             let workDays = 0;
             let workHours = 0;
             let nightCount = 0;
+            let teleworkCount = 0;
             let paidLeaveCount = 0;
+            let offCount = 0;
 
-            let counts = { "未選択": 0, "早": 0, "遅": 0, "夜": 0, "明け": 0, "早テレ": 0, "遅テレ": 0, "夜テレ": 0, "休み": 0, "有休": 0 };
+            let counts = { "早": 0, "遅": 0, "夜": 0, "明け": 0, "早テレ": 0, "遅テレ": 0, "夜テレ": 0, "休み": 0, "有休": 0, "未選択": 0 };
 
             shifts.forEach(s => {
                 if(s.type.includes('早（8:00')) { workDays++; workHours += 8; counts["早"]++; }
                 else if(s.type.includes('遅（13:00')) { workDays++; workHours += 8; counts["遅"]++; }
                 else if(s.type.includes('夜（21:30')) { workDays++; workHours += 9; nightCount++; counts["夜"]++; }
-                else if(s.type.includes('早（テレワーク）')) { workDays++; workHours += 8; counts["早テレ"]++; }
-                else if(s.type.includes('遅（テレワーク）')) { workDays++; workHours += 8; counts["遅テレ"]++; }
-                else if(s.type.includes('夜（テレワーク）')) { workDays++; workHours += 9; nightCount++; counts["夜テレ"]++; }
+                else if(s.type.includes('早（テレワーク）')) { workDays++; workHours += 8; teleworkCount++; counts["早テレ"]++; }
+                else if(s.type.includes('遅（テレワーク）')) { workDays++; workHours += 8; teleworkCount++; counts["遅テレ"]++; }
+                else if(s.type.includes('夜（テレワーク）')) { workDays++; workHours += 9; nightCount++; teleworkCount++; counts["夜テレ"]++; }
                 else if(s.type.includes('明け')) { counts["明け"]++; }
                 else if(s.type.includes('有休')) { paidLeaveCount++; counts["有休"]++; }
-                else if(s.type.includes('休み')) { counts["休み"]++; }
+                else if(s.type.includes('休み')) { offCount++; counts["休み"]++; }
                 else { counts["未選択"]++; }
             });
 
             document.getElementById('statWorkDays').innerText = workDays + "日";
             document.getElementById('statWorkHours').innerText = workHours + "h";
             document.getElementById('statNightCount').innerText = nightCount + "回";
+            document.getElementById('statTeleworkCount').innerText = teleworkCount + "日";
             document.getElementById('statPaidLeave').innerText = paidLeaveCount + "日";
+            document.getElementById('statOffCount').innerText = offCount + "日";
 
             const ctx = document.getElementById('shiftDonutChart').getContext('2d');
             const chartData = [counts["早"], counts["遅"], counts["夜"], counts["明け"], counts["早テレ"], counts["遅テレ"], counts["夜テレ"], counts["休み"], counts["有休"], counts["未選択"]];
