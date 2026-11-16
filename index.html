@@ -36,7 +36,7 @@
                     Shift Sync Dashboard Pro
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    テレワーク個別分類（早・遅・夜）・確認プロンプト搭載
+                    土日祝自動色分け・祝日名表示・テレワーク個別対応
                 </p>
             </div>
 
@@ -194,6 +194,59 @@
             "有休"
         ];
 
+        // 簡易日本の祝日判定ロジック (2026年〜2030年対応)
+        function getJapaneseHoliday(year, month, day) {
+            const d = new Date(year, month - 1, day);
+            const w = d.getDay(); // 0:日, 1:月...
+
+            // 固定祝日
+            if (month === 1 && day === 1) return "元日";
+            if (month === 2 && day === 11) return "建国記念の日";
+            if (month === 2 && day === 23) return "天皇誕生日";
+            if (month === 4 && day === 29) return "昭和の日";
+            if (month === 5 && day === 3) return "憲法記念日";
+            if (month === 5 && day === 4) return "みどりの日";
+            if (month === 5 && day === 5) return "こどもの日";
+            if (month === 7 && day === 20 && year === 2026) return "海の日"; // 年による変動簡易対応
+            if (month === 8 && day === 11) return "山の日";
+            if (month === 9 && day === 23) return "秋分の日"; // 簡易固定
+            if (month === 10 && day === 10 && year === 2026) return "スポーツの日";
+            if (month === 11 && day === 3) return "文化の日";
+            if (month === 11 && day === 23) return "勤労感謝の日";
+
+            // 春分の日・秋分の日 (2026〜2030年の主要な計算)
+            if (month === 3) {
+                let vernalEquinox = (year === 2026 || year === 2030) ? 20 : 21;
+                if (day === vernalEquinox) return "春分の日";
+            }
+            if (month === 9) {
+                let autumnEquinox = (year === 2027) ? 23 : 22;
+                // 上記固定と重複避けるため簡易調整
+            }
+
+            // ハッピーマンデー制度 (第X月曜日)
+            let weekNum = Math.ceil(day / 7);
+            // 成人の日 (1月第2月曜日)
+            if (month === 1 && w === 1 && weekNum === 2) return "成人の日";
+            // 海の日 (7月第3月曜日 ※2026年以外)
+            if (month === 7 && w === 1 && weekNum === 3 && year !== 2026) return "海の日";
+            // 敬老の日 (9月第3月曜日)
+            if (month === 9 && w === 1 && weekNum === 3) return "敬老の日";
+            // スポーツの日 (10月第2月曜日 ※2026年以外)
+            if (month === 10 && w === 1 && weekNum === 2 && year !== 2026) return "スポーツの日";
+
+            // 振替休日の簡易判定 (日曜が祝日の場合、直後の平日)
+            // 実務上主要な祝日の振替
+            if (w === 1) { // 月曜日
+                const prevDay = new Date(year, month - 1, day - 1);
+                if (getJapaneseHoliday(prevYear = year, prevMonth = prevDay.getMonth() + 1, prevD = prevDay.getDate())) {
+                    return "振替休日";
+                }
+            }
+
+            return null;
+        }
+
         function generateDefaultMonthData(year, month) {
             const daysInMonth = new Date(year, month, 0).getDate();
             const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -202,7 +255,8 @@
             for (let d = 1; d <= daysInMonth; d++) {
                 const dateObj = new Date(year, month - 1, d);
                 const w = weekDays[dateObj.getDay()];
-                data.push({ day: d, week: w, type: "未選択" });
+                const holidayName = getJapaneseHoliday(year, month, d);
+                data.push({ day: d, week: w, holiday: holidayName, type: "未選択" });
             }
             return data;
         }
@@ -283,11 +337,38 @@
                 if (filter !== 'all' && !item.type.includes(filter)) return;
 
                 const shiftId = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(item.day).padStart(2, '0')}`;
-                const isRegistered = registeredIds.includes(shiftId);
+W                const isRegistered = registeredIds.includes(shiftId);
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors";
                 
+                // 土日祝の色分けロジック
+                let rowBgClass = "";
+                let weekColorClass = "text-slate-500 dark:text-slate-400";
+                
+                if (item.holiday) {
+                    // 祝日 (赤系)
+                    rowBgClass = "bg-rose-50/50 dark:bg-rose-950/20";
+                    weekColorClass = "text-rose-600 dark:text-rose-400 font-bold";
+                } else if (item.week === "日") {
+                    // 日曜日 (赤系)
+                    rowBgClass = "bg-rose-50/30 dark:bg-rose-950/10";
+                    weekColorClass = "text-rose-500 dark:text-rose-400 font-bold";
+                } else if (item.week === "土") {
+                    // 土曜日 (青系)
+                    rowBgClass = "bg-sky-50/30 dark:bg-sky-950/10";
+                    weekColorClass = "text-sky-600 dark:text-sky-400 font-bold";
+                }
+
+                if (rowBgClass) {
+                    tr.className += ` ${rowBgClass}`;
+                }
+
+                let weekDisplay = `(${item.week})`;
+                if (item.holiday) {
+                    weekDisplay = `<span class="inline-flex items-center gap-1"><span class="${weekColorClass}">( ${item.week} )</span> <span class="text-[10px] bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300 px-1.5 py-0.5 rounded-md font-semibold">${item.holiday}</span></span>`;
+                }
+
                 let optionsHtml = '';
                 shiftTypesList.forEach(st => {
                     const selected = item.type === st ? 'selected' : '';
@@ -305,7 +386,7 @@
 
                 tr.innerHTML = `
                     <td class="p-3.5 font-semibold">${currentMonth}月 ${item.day}日</td>
-                    <td class="p-3.5 text-slate-500 dark:text-slate-400">${item.week}</td>
+                    <td class="p-3.5 ${weekColorClass}">${weekDisplay}</td>
                     <td class="p-3.5">
                         <select onchange="updateShiftType(${item.day}, this.value)" class="text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 ${badgeClass} cursor-pointer shadow-sm">
                             ${optionsHtml}
@@ -414,7 +495,6 @@
             renderTable();
         }
 
-        // Bulk register with period confirmation prompt
         function bulkRegisterGCal() {
             const confirmed = confirm(`【実行前の確認】\n\n【${currentYear}年${currentMonth}月】の未登録シフトをGoogleカレンダーに一括登録します。\n本当によろしいですか？`);
             if (!confirmed) return;
@@ -450,7 +530,6 @@
             }
         }
 
-        // Reset with period confirmation prompt
         function resetRegisteredStatus() {
             const confirmed = confirm(`【実行前の確認】\n\n【${currentYear}年${currentMonth}月】のGoogleカレンダー登録履歴（二重登録ガードの記録）をリセットします。\n\n※この操作を行うと、この月の全シフトが未登録の状態になります。実行しますか？`);
             if (!confirmed) return;
