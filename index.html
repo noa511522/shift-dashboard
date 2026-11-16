@@ -118,7 +118,7 @@
                     <i class="fa-brands fa-line text-lg"></i> LINE共有
                 </button>
                 <button onclick="bulkRegisterGCal()" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg shadow-indigo-600/25 transition-all hover:-translate-y-0.5 flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-check"></i> カレンダー一括登録
+                    <i class="fa-solid fa-file-arrow-down"></i> カレンダー一括登録 (CSV)
                 </button>
             </div>
         </header>
@@ -138,7 +138,7 @@
                         </h2>
                     </div>
 
-                    <!-- Metric Cards Grid (総出勤・労働時間・早番・遅番・夜勤・テレワーク・有休・公休 の全8枚) -->
+                    <!-- Metric Cards Grid -->
                     <div class="grid grid-cols-2 gap-3.5">
                         <div class="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500"></div>
@@ -347,8 +347,7 @@
 
             "2030-1-1": "元日", "2030-1-14": "成人の日", "2030-2-11": "建国記念の日", "2030-2-23": "天皇誕生日",
             "2030-3-20": "春分の日", "2030-4-29": "昭和の日", "2030-5-3": "憲法記念日", "2030-5-4": "みどりの日",
-            "2030-5-5": "こどもの日", "2030-5-6": "振替休日", "2030-7-15": "海の日", "2030-8-11": "山の日",
-            "2030-8-12": "振替休日", "2030-9-16": "敬老の日", "2030-9-23": "秋分の日", "2030-10-14": "スポーツの日",
+            "2030-5-5": "こどもの日", "2030-5-6": "振替休日", "2030-7-15": "海の日", "2030-8-11": "山の日", "2030-8-12": "振替休日", "2030-9-16": "敬老の日", "2030-9-23": "秋分の日", "2030-10-14": "スポーツの日",
             "2030-11-3": "文化の日", "2030-11-4": "振替休日", "2030-11-23": "勤労感謝の日"
         };
 
@@ -638,39 +637,53 @@
             renderTable();
         }
 
+        // CSV一括エクスポート方式（ポップアップ制限を回避して一発で全件登録可能）
         function bulkRegisterGCal() {
-            const confirmed = confirm(`【実行前の確認】\n\n【${currentYear}年${currentMonth}月】の未登録シフトをGoogleカレンダーに一括登録します。\n本当によろしいですか？`);
+            const shifts = getCurrentShifts();
+            let activeShifts = shifts.filter(item => item.type !== '未選択');
+
+            if (activeShifts.length === 0) {
+                alert("【お知らせ】登録対象となるシフト（未選択以外）がありません。");
+                return;
+            }
+
+            const confirmed = confirm(`【${currentYear}年${currentMonth}月】のシフト ${activeShifts.length}件をGoogleカレンダー用ファイル(CSV)として一括ダウンロードしますか？\n\n[使い方]\nダウンロードされたCSVをGoogleカレンダーの「インポート」から読み込ませるだけで、全シフトが一瞬でカレンダーに入ります！`);
             if (!confirmed) return;
 
-            const shifts = getCurrentShifts();
-            const registeredIds = getRegisteredIds();
-            let newRegisterCount = 0;
+            // Googleカレンダー形式のCSVヘッダー
+            let csvContent = "\uFEFFSubject,Start Date,All Day Event,Description\r\n";
 
-            shifts.forEach(item => {
-                if (item.type === '未選択') return;
+            let registeredIds = getRegisteredIds();
 
+            activeShifts.forEach(item => {
                 const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(item.day).padStart(2, '0')}`;
+                // CSV用の日付フォーマット (MM/DD/YYYY または YYYY/MM/DD)
+                const formattedDate = `${currentYear}/${String(currentMonth).padStart(2, '0')}/${String(item.day).padStart(2, '0')}`;
                 
+                const subject = `"[シフト] ${item.type}"`;
+                const description = `"Shift Sync Dashboard 一括登録 (${item.type})"`;
+
+                csvContent += `${subject},${formattedDate},True,${description}\r\n`;
+
                 if (!registeredIds.includes(dateStr)) {
-                    const cleanDate = dateStr.replace(/-/g, '');
-                    const title = encodeURIComponent(`[シフト] ${item.type}`);
-                    const details = encodeURIComponent(`Shift Sync Dashboard 一括登録 (${item.type})`);
-                    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${cleanDate}/${cleanDate}&details=${details}`;
-                    
-                    window.open(gcalUrl, '_blank');
                     registeredIds.push(dateStr);
-                    newRegisterCount++;
                 }
             });
+
+            // CSVファイルとしてダウンロード実行
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `shift_calendar_${currentYear}_${currentMonth}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
 
             saveRegisteredIds(registeredIds);
             renderTable();
 
-            if (newRegisterCount > 0) {
-                alert(`${currentYear}年${currentMonth}月の新着シフト ${newRegisterCount}件をGoogleカレンダーに登録しました！`);
-            } else {
-                alert("【二重登録ガード】新しく登録する対象のシフトはありません。");
-            }
+            alert(`【完了】${currentYear}年${currentMonth}月のシフトCSVファイルのダウンロードが完了しました！\n\n【次の手順】\n1. Googleカレンダー(PC版)を開く\n2. 画面右上の「歯車マーク(設定)」＞「設定」を開く\n3. 左メニューの「インポート/エクスポート」を選択\n4. ダウンロードしたCSVファイルを選んで「インポート」を押すだけで全件完了します！`);
         }
 
         function resetRegisteredStatus() {
