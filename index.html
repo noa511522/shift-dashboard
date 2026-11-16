@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shift Sync Dashboard Pro</title>
+    <title>Shift Sync Dashboard Pro (Local Edition)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+JP:wght@500;700;900&display=swap');
@@ -42,19 +45,28 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 9999px; }
+
+        /* PDF Printing Styles */
+        @media print {
+            body { background: white !important; color: black !important; }
+            header, .no-print { display: none !important; }
+            .glass-card { background: white !important; box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+            .print-container { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen antialiased p-4 sm:p-6 lg:p-8 transition-colors duration-300">
 
     <div class="max-w-7xl mx-auto space-y-6">
+        <!-- Header Section -->
         <header class="glass-card rounded-3xl p-5 sm:p-6 flex flex-col xl:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 shrink-0">
-                    <i class="fa-solid fa-layer-group text-xl"></i>
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
                 </div>
                 <div>
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                        Team Cloud Sync Suite
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                        Local Secure Edition (同期フリー)
                     </span>
                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white mt-0.5">
                         Shift Sync <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Dashboard</span>
@@ -62,29 +74,28 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center justify-center gap-2.5">
+            <div class="flex flex-wrap items-center justify-center gap-2.5 no-print">
                 <div class="flex items-center bg-slate-100/90 dark:bg-slate-900/90 rounded-2xl p-1 border border-slate-200/80 dark:border-slate-700/80 shadow-inner gap-0.5">
-                    <button onclick="changeMonthRelative(-1)" class="w-9 h-9 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all text-slate-700 dark:text-slate-200"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                    <button onclick="changeMonthRelative(-1)" class="w-9 h-9 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all text-slate-700 dark:text-slate-200" title="前月へ"><i class="fa-solid fa-chevron-left text-xs"></i></button>
                     <select id="selectYear" onchange="changeMonthYear()" class="bg-transparent font-extrabold text-sm px-2 py-1.5 outline-none cursor-pointer">
-                        <option value="2026">2026年</option>
-                        <option value="2027">2027年</option>
-                        <option value="2028">2028年</option>
+                        <option value="2026">2026年</option><option value="2027">2027年</option><option value="2028">2028年</option>
                     </select>
                     <select id="selectMonth" onchange="changeMonthYear()" class="bg-transparent text-indigo-600 font-extrabold text-sm px-2 py-1.5 outline-none cursor-pointer">
                         <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option>
                         <option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option>
                         <option value="9">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
                     </select>
-                    <button onclick="changeMonthRelative(1)" class="w-9 h-9 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all text-slate-700 dark:text-slate-200"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    <button onclick="changeMonthRelative(1)" class="w-9 h-9 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all text-slate-700 dark:text-slate-200" title="次月へ"><i class="fa-solid fa-chevron-right text-xs"></i></button>
                 </div>
                 <button onclick="jumpToCurrentMonth()" class="bg-white dark:bg-slate-800 text-xs font-bold px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm"><i class="fa-solid fa-calendar-day text-indigo-600"></i> 当月へ</button>
                 <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
-                <button onclick="shareToLine()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg"><i class="fa-brands fa-line text-lg"></i> LINE共有</button>
-                <button onclick="openCsvModal()" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg"><i class="fa-solid fa-file-arrow-down"></i> CSV一括</button>
+                <button onclick="openPdfModal()" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-2"><i class="fa-solid fa-file-pdf text-lg"></i> LINE用PDF出力</button>
+                <button onclick="openCsvModal()" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg shadow-indigo-600/25 transition-all flex items-center gap-2"><i class="fa-solid fa-file-arrow-down"></i> カレンダーCSV</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Main Layout Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 print-container">
             <!-- Left Summary -->
             <div class="lg:col-span-5 space-y-6">
                 <div class="glass-card rounded-3xl p-6 space-y-6">
@@ -93,8 +104,8 @@
                             <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center"><i class="fa-solid fa-chart-pie text-sm"></i></span>
                             <span id="summaryTitleLabel">2026年11月</span> サマリー
                         </h2>
-                        <span id="syncStatusBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-500 border border-slate-200 dark:border-slate-800">
-                            <i class="fa-solid fa-cloud text-slate-400"></i> 待機中
+                        <span class="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 border border-emerald-200 dark:border-emerald-800">
+                            <i class="fa-solid fa-lock"></i> ローカル保護中
                         </span>
                     </div>
 
@@ -156,12 +167,15 @@
                             <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center"><i class="fa-solid fa-calendar-days text-sm"></i></span>
                             <span id="tableTitleLabel">2026年11月</span> シフト一覧
                         </h2>
-                        <select id="filterType" onchange="renderTable()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl px-3.5 py-2 outline-none cursor-pointer shadow-sm">
+                        <select id="filterType" onchange="renderTable()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl px-3.5 py-2 outline-none cursor-pointer shadow-sm no-print">
                             <option value="all">すべてのシフトを表示</option>
                             <option value="未選択">未選択のみ</option>
                             <option value="早（8:00～17:00）">早番のみ</option>
+                            <option value="早（テレワーク）">早(テレワーク)のみ</option>
                             <option value="遅（13:00～22:00）">遅番のみ</option>
+                            <option value="遅（テレワーク）">遅(テレワーク)のみ</option>
                             <option value="夜（21:30～8:30）">夜勤のみ</option>
+                            <option value="夜（テレワーク）">夜(テレワーク)のみ</option>
                             <option value="明け">明けのみ</option>
                             <option value="休み">休みのみ</option>
                             <option value="有休">有休のみ</option>
@@ -185,11 +199,46 @@
         </div>
     </div>
 
-    <!-- CSV Modal -->
+    <!-- PDF Range Select Modal -->
+    <div id="pdfModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                <h3 class="text-lg font-black flex items-center gap-2"><i class="fa-solid fa-file-pdf text-emerald-600"></i> LINE共有用おしゃれPDF出力</h3>
+                <button onclick="closePdfModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300">月またぎのシフト期間にも対応しています。出力したい期間を指定してください。</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1.5">開始日</label>
+                    <select id="pdfStartMonth" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl px-3 py-2 mb-2 outline-none">
+                        <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option>
+                        <option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option>
+                        <option value="9">9月</option><option value="10">10月</option><option value="11" selected>11月</option><option value="12">12月</option>
+                    </select>
+                    <select id="pdfStartDay" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl px-3 py-2.5 outline-none"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1.5">終了日</label>
+                    <select id="pdfEndMonth" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl px-3 py-2 mb-2 outline-none">
+                        <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option>
+                        <option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option>
+                        <option value="9">9月</option><option value="10">10月</option><option value="11" selected>11月</option><option value="12">12月</option>
+                    </select>
+                    <select id="pdfEndDay" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl px-3 py-2.5 outline-none"></select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closePdfModal()" class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">キャンセル</button>
+                <button onclick="generateStyledPdf()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-lg flex items-center gap-2"><i class="fa-solid fa-print"></i> プレビュー・PDF保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSV Range Modal -->
     <div id="csvModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
             <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-                <h3 class="text-lg font-black"><i class="fa-solid fa-file-arrow-down text-indigo-600"></i> CSVエクスポート範囲</h3>
+                <h3 class="text-lg font-black"><i class="fa-solid fa-file-arrow-down text-indigo-600"></i> カレンダーCSV（月またぎ対応）</h3>
                 <button onclick="closeCsvModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-4">
@@ -216,88 +265,45 @@
     </div>
 
     <script>
-        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxz5M4uHAE4suh6X8v-N9S_5phSkv1wHc2cvYlG6gvgV6lbDHLyD6gTfJSsT7CTabfn/exec";
-        const shiftTypesList = ["未選択", "早（8:00～17:00）", "遅（13:00～22:00）", "夜（21:30～8:30）", "明け", "早（テレワーク）", "遅（テレワーク）", "夜（テレワーク）", "休み", "有休"];
-        const HOLIDAY_MASTER = {
-            "2026-11-3": "文化の日", "2026-11-23": "勤労感謝の日"
-        };
-
-        function generateDefaultMonthData(year, month) {
-            const daysInMonth = new Date(year, month, 0).getDate();
-            const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
-            let data = [];
-            for (let d = 1; d <= daysInMonth; d++) {
-                const dateObj = new Date(year, month - 1, d);
-                data.push({ day: d, week: weekDays[dateObj.getDay()], holiday: HOLIDAY_MASTER[`${year}-${month}-${d}`] || null, type: "未選択" });
-            }
-            return data;
-        }
+        const shiftTypesList = [
+            "未選択", 
+            "早（8:00～17:00）", 
+            "早（テレワーク）",
+            "遅（13:00～22:00）", 
+            "遅（テレワーク）",
+            "夜（21:30～8:30）", 
+            "夜（テレワーク）",
+            "明け", 
+            "休み", 
+            "有休"
+        ];
+        
+        const HOLIDAY_MASTER = { "2026-11-3": "文化の日", "2026-11-23": "勤労感謝の日" };
 
         let now = new Date();
         let currentYear = now.getFullYear();
         let currentMonth = now.getMonth() + 1;
-        let shiftCache = {};
+        let shiftStore = JSON.parse(localStorage.getItem('shift_store_local') || '{}');
         let donutChartInstance = null;
-        let isLoaded = false;
 
         function getYearMonthKey(y, m) { return `${y}-${String(m).padStart(2, '0')}`; }
 
-        async function initApp() {
-            setSyncStatus("loading", "読込中...");
-            try {
-                const res = await fetch(GAS_API_URL);
-                const data = await res.json();
-                shiftCache = {};
-                data.forEach(item => {
-                    if (!shiftCache[item.yearMonth]) shiftCache[item.yearMonth] = {};
-                    shiftCache[item.yearMonth][item.day] = item.type;
+        function getMonthShifts(y, m) {
+            const ymKey = getYearMonthKey(y, m);
+            const daysInMonth = new Date(y, m, 0).getDate();
+            const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
+            let data = [];
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateObj = new Date(y, m - 1, d);
+                const type = (shiftStore[ymKey] && shiftStore[ymKey][d]) ? shiftStore[ymKey][d] : "未選択";
+                data.push({ 
+                    year: y, month: m, day: d, 
+                    week: weekDays[dateObj.getDay()], 
+                    holiday: HOLIDAY_MASTER[`${y}-${m}-${d}`] || null, 
+                    type: type 
                 });
-                setSyncStatus("synced", "同期完了");
-            } catch (err) {
-                setSyncStatus("error", "オフライン");
             }
-            isLoaded = true;
-            renderTable();
-        }
-
-        async function saveShiftToCloud(targetY, targetM, day, type) {
-            if (!isLoaded) return;
-            setSyncStatus("loading", "保存中...");
-            try {
-                await fetch(GAS_API_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify({ yearMonth: getYearMonthKey(targetY, targetM), day: day, type: type })
-                });
-                setSyncStatus("synced", "同期完了");
-            } catch (err) {
-                setSyncStatus("error", "保存失敗");
-            }
-        }
-
-        function setSyncStatus(status, text) {
-            const badge = document.getElementById('syncStatusBadge');
-            if (status === "loading") {
-                badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 animate-pulse";
-                badge.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> ${text}`;
-            } else if (status === "synced") {
-                badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200";
-                badge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> ${text}`;
-            } else {
-                badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-xl bg-rose-50 text-rose-600 border border-rose-200";
-                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${text}`;
-            }
-        }
-
-        function getCurrentShifts() {
-            const ymKey = getYearMonthKey(currentYear, currentMonth);
-            const defaultData = generateDefaultMonthData(currentYear, currentMonth);
-            if (!shiftCache[ymKey]) return defaultData;
-            return defaultData.map(item => {
-                if (shiftCache[ymKey][item.day]) item.type = shiftCache[ymKey][item.day];
-                return item;
-            });
+            return data;
         }
 
         function updateLabels() {
@@ -335,23 +341,22 @@
 
         function updateShiftType(day, newType) {
             const ymKey = getYearMonthKey(currentYear, currentMonth);
-            if (!shiftCache[ymKey]) shiftCache[ymKey] = {};
-            if (newType === "未選択") delete shiftCache[ymKey][day];
-            else shiftCache[ymKey][day] = newType;
+            if (!shiftStore[ymKey]) shiftStore[ymKey] = {};
+            if (newType === "未選択") delete shiftStore[ymKey][day];
+            else shiftStore[ymKey][day] = newType;
 
+            localStorage.setItem('shift_store_local', JSON.stringify(shiftStore));
             renderTable();
-            saveShiftToCloud(currentYear, currentMonth, day, newType);
         }
 
         function renderTable() {
-            if (!isLoaded) return;
             const tbody = document.getElementById('shiftTableBody');
             const filter = document.getElementById('filterType').value;
-            const shifts = getCurrentShifts();
+            const shifts = getMonthShifts(currentYear, currentMonth);
             tbody.innerHTML = '';
             
             shifts.forEach(item => {
-                if (filter !== 'all' && !item.type.includes(filter)) return;
+                if (filter !== 'all' && item.type !== filter) return;
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors";
                 if (item.holiday || item.week === "日") tr.className += " bg-rose-50/50 dark:bg-rose-950/20";
@@ -369,22 +374,24 @@
                 `;
                 tbody.appendChild(tr);
             });
-            updateSummaryAndChart(shifts);
+            updateSummaryAndChart(getMonthShifts(currentYear, currentMonth));
         }
 
         function updateSummaryAndChart(shifts) {
             let workDays = 0, workHours = 0, early = 0, late = 0, night = 0, tele = 0, paid = 0, off = 0;
-            let counts = { "早": 0, "遅": 0, "夜": 0, "明け": 0, "休み": 0, "有休": 0, "未選択": 0 };
+            let counts = { "早": 0, "早テレ": 0, "遅": 0, "遅テレ": 0, "夜": 0, "夜テレ": 0, "明け": 0, "休み": 0, "有休": 0, "未選択": 0 };
 
             shifts.forEach(s => {
-                if (s.type.includes('早（8:00')) { workDays++; workHours += 8; early++; counts["早"]++; }
-                else if (s.type.includes('遅（13:00')) { workDays++; workHours += 8; late++; counts["遅"]++; }
-                else if (s.type.includes('夜（21:30')) { workDays++; workHours += 10; night++; counts["夜"]++; }
-                else if (s.type.includes('明け')) { counts["明け"]++; }
-                else if (s.type.includes('有休')) { paid++; counts["有休"]++; }
-                else if (s.type.includes('休み')) { off++; counts["休み"]++; }
+                if (s.type === '早（8:00～17:00）') { workDays++; workHours += 8; early++; counts["早"]++; }
+                else if (s.type === '早（テレワーク）') { workDays++; workHours += 8; early++; tele++; counts["早テレ"]++; }
+                else if (s.type === '遅（13:00～22:00）') { workDays++; workHours += 8; late++; counts["遅"]++; }
+                else if (s.type === '遅（テレワーク）') { workDays++; workHours += 8; late++; tele++; counts["遅テレ"]++; }
+                else if (s.type === '夜（21:30～8:30）') { workDays++; workHours += 10; night++; counts["夜"]++; }
+                else if (s.type === '夜（テレワーク）') { workDays++; workHours += 10; night++; tele++; counts["夜テレ"]++; }
+                else if (s.type === '明け') { counts["明け"]++; }
+                else if (s.type === '有休') { paid++; counts["有休"]++; }
+                else if (s.type === '休み') { off++; counts["休み"]++; }
                 else { counts["未選択"]++; }
-                if (s.type.includes('テレワーク')) tele++;
             });
 
             document.getElementById('statWorkDays').innerText = workDays + "日";
@@ -401,13 +408,143 @@
             donutChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['早番', '遅番', '夜勤', '明け', '休み', '有休', '未選択'],
-                    datasets: [{ data: [counts["早"], counts["遅"], counts["夜"], counts["明け"], counts["休み"], counts["有休"], counts["未選択"]], backgroundColor: ['#f59e0b', '#f97316', '#4f46e5', '#10b981', '#cbd5e1', '#ec4899', '#94a3b8'] }]
+                    labels: ['早番', '早テレ', '遅番', '遅テレ', '夜勤', '夜テレ', '明け', '休み', '有休', '未選択'],
+                    datasets: [{ data: [counts["早"], counts["早テレ"], counts["遅"], counts["遅テレ"], counts["夜"], counts["夜テレ"], counts["明け"], counts["休み"], counts["有休"], counts["未選択"]], backgroundColor: ['#f59e0b', '#06b6d4', '#f97316', '#0ea5e9', '#4f46e5', '#6366f1', '#10b981', '#cbd5e1', '#ec4899', '#94a3b8'] }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } }, cutout: '65%' }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 8, font: { size: 9 } } } }, cutout: '60%' }
             });
         }
 
+        // --- PDF Generation Modal & Logic ---
+        function openPdfModal() {
+            const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+            let s = document.getElementById('pdfStartDay'), e = document.getElementById('pdfEndDay');
+            s.innerHTML = ''; e.innerHTML = '';
+            for (let i = 1; i <= daysInMonth; i++) {
+                s.innerHTML += `<option value="${i}">${i}日</option>`;
+                e.innerHTML += `<option value="${i}" ${i === daysInMonth ? 'selected' : ''}>${i}日</option>`;
+            }
+            document.getElementById('pdfModal').classList.remove('hidden');
+        }
+        function closePdfModal() { document.getElementById('pdfModal').classList.add('hidden'); }
+
+        function generateStyledPdf() {
+            const startM = parseInt(document.getElementById('pdfStartMonth').value);
+            const startD = parseInt(document.getElementById('pdfStartDay').value);
+            const endM = parseInt(document.getElementById('pdfEndMonth').value);
+            const endD = parseInt(document.getElementById('pdfEndDay').value);
+            closePdfModal();
+
+            // 期間内のシフトを収集（月またぎ対応）
+            let targetShifts = [];
+            let cursor = new Date(currentYear, startM - 1, startD);
+            let endLimit = new Date(currentYear, endM - 1, endD);
+
+            if (cursor > endLimit) {
+                alert("開始日は終了日より前の日付を選択してください。");
+                return;
+            }
+
+            while (cursor <= endLimit) {
+                let y = cursor.getFullYear();
+                let m = cursor.getMonth() + 1;
+                let d = cursor.getDate();
+                let monthShifts = getMonthShifts(y, m);
+                let found = monthShifts.find(item => item.day === d);
+                if (found) {
+                    targetShifts.push(found);
+                }
+                cursor.setDate(cursor.getDate() + 1);
+            }
+
+            // 新しくスタイリッシュなHTMLプレビューウィンドウを開いて印刷（PDF化）する
+            let printWin = window.open('', '_blank');
+            let htmlContent = `
+                <!DOCTYPE html>
+                <html lang="ja">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>シフトスケジュール表 (${startM}月${startD}日 〜 ${endM}月${endD}日)</title>
+                    <script src="https://cdn.tailwindcss.com"><\/script>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@500;700;900&display=swap');
+                        body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; background: #f8fafc; color: #0f172a; padding: 2rem; }
+                        .glass { background: white; border: 1px solid #e2e8f0; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+                        @media print { body { background: white; padding: 0; } .no-print { display: none; } }
+                    </style>
+                </head>
+                <body class="max-w-3xl mx-auto space-y-6">
+                    <div class="no-print flex justify-between items-center bg-indigo-900 text-white p-4 rounded-2xl shadow-lg">
+                        <div>
+                            <h2 class="font-bold text-sm">✨ LINE共有用おしゃれPDFプレビュー</h2>
+                            <p class="text-xs text-indigo-200">ブラウザの印刷機能から「PDFに保存」を選択してください。</p>
+                        </div>
+                        <button onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow transition">🖨️ 今すぐPDF保存・印刷</button>
+                    </div>
+
+                    <div class="glass p-8 space-y-6">
+                        <div class="flex justify-between items-start border-b border-slate-100 pb-6">
+                            <div>
+                                <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">Official Shift Schedule</span>
+                                <h1 class="text-2xl font-black text-slate-900 mt-2">チーム シフトスケジュール表</h1>
+                                <p class="text-xs text-slate-500 mt-1">対象期間：${currentYear}年 ${startM}月${startD}日 〜 ${endM}月${endD}日</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs font-bold text-slate-400">発行日時</div>
+                                <div class="text-xs font-extrabold text-slate-700">${new Date().toLocaleDateString()}</div>
+                            </div>
+                        </div>
+
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b-2 border-slate-100 text-slate-400 text-[11px] uppercase tracking-wider">
+                                    <th class="pb-3 font-extrabold">日付</th>
+                                    <th class="pb-3 font-extrabold">曜日</th>
+                                    <th class="pb-3 font-extrabold text-right">割り当てシフト</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50 text-sm font-bold">
+            `;
+
+            targetShifts.forEach(item => {
+                let badgeStyle = "bg-slate-100 text-slate-700";
+                if (item.type.includes('早')) badgeStyle = "bg-amber-100 text-amber-800 border border-amber-200";
+                else if (item.type.includes('遅')) badgeStyle = "bg-orange-100 text-orange-800 border border-orange-200";
+                else if (item.type.includes('夜')) badgeStyle = "bg-indigo-100 text-indigo-800 border border-indigo-200";
+                else if (item.type.includes('明け')) badgeStyle = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                else if (item.type.includes('テレワーク')) badgeStyle = "bg-cyan-100 text-cyan-800 border border-cyan-200";
+                else if (item.type.includes('有休')) badgeStyle = "bg-pink-100 text-pink-800 border border-pink-200";
+                else if (item.type.includes('休み')) badgeStyle = "bg-slate-200 text-slate-700";
+
+                let dayColor = "text-slate-800";
+                if (item.holiday || item.week === "日") dayColor = "text-rose-600";
+                else if (item.week === "土") dayColor = "text-sky-600";
+
+                htmlContent += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="py-3.5 text-slate-900">${item.month}月 ${item.day}日</td>
+                        <td class="py-3.5 ${dayColor}">( ${item.week} ) ${item.holiday ? `<span class="text-[10px] bg-rose-500 text-white px-1.5 py-0.5 rounded ml-1">${item.holiday}</span>` : ''}</td>
+                        <td class="py-3.5 text-right"><span class="px-3 py-1 rounded-xl text-xs font-extrabold ${badgeStyle}">${item.type}</span></td>
+                    </tr>
+                `;
+            });
+
+            htmlContent += `
+                            </tbody>
+                        </table>
+
+                        <div class="border-t border-slate-100 pt-4 text-center text-[10px] text-slate-400 font-medium">
+                            Shift Sync Dashboard Pro — Generated for Team Collaboration via LINE
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+            printWin.document.write(htmlContent);
+            printWin.document.close();
+        }
+
+        // --- CSV Export Modal & Logic ---
         function openCsvModal() {
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
             let s = document.getElementById('csvStartDay'), e = document.getElementById('csvEndDay');
@@ -424,11 +561,11 @@
             const startDay = parseInt(document.getElementById('csvStartDay').value);
             const endDay = parseInt(document.getElementById('csvEndDay').value);
             const excludeOff = document.getElementById('csvExcludeOff').checked;
-            const shifts = getCurrentShifts().filter(item => item.day >= startDay && item.day <= endDay && item.type !== '未選択' && !(excludeOff && (item.type.includes('休み') || item.type.includes('有休'))));
+            const shifts = getMonthShifts(currentYear, currentMonth).filter(item => item.day >= startDay && item.day <= endDay && item.type !== '未選択' && !(excludeOff && (item.type.includes('休み') || item.type.includes('有休'))));
             
             if (shifts.length === 0) { alert("対象シフトがありません。"); return; }
             let csv = "\uFEFFSubject,Start Date,All Day Event,Description\r\n";
-            shifts.forEach(i => { csv += `"[シフト] ${i.type}",${currentYear}/${String(currentMonth).padStart(2,'0')}/${String(i.day).padStart(2,'0')},True,"Sync CSV"\r\n`; });
+            shifts.forEach(i => { csv += `"[シフト] ${i.type}",${currentYear}/${String(currentMonth).padStart(2,'0')}/${String(i.day).padStart(2,'0')},True,"Local Sync CSV"\r\n`; });
             
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -442,15 +579,11 @@
             document.getElementById('themeIcon').className = document.documentElement.classList.contains('dark') ? "fa-solid fa-sun" : "fa-solid fa-moon";
         }
 
-        function shareToLine() {
-            window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}`, '_blank');
-        }
-
         window.onload = function() {
             document.getElementById('selectYear').value = currentYear;
             document.getElementById('selectMonth').value = currentMonth;
             updateLabels();
-            initApp();
+            renderTable();
         };
     </script>
 </body>
