@@ -346,8 +346,7 @@
 
     <!-- JavaScript Logic -->
     <script>
-        // 発行されたGoogle Apps ScriptのウェブアプリURL
-        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxhLQL6rodkI5TBvhgBAUj25JSh2XEgLP_KBHMvd3fy0Vc9GweIMlEpVXcxUakWRjTv/exec";
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxz5M4uHAE4suh6X8v-N9S_5phSkv1wHc2cvYlG6gvgV6lbDHLyD6gTfJSsT7CTabfn/exec";
 
         const shiftTypesList = [
             "未選択",
@@ -415,14 +414,13 @@
         let currentMonth = now.getMonth() + 1;
         let donutChartInstance = null;
         
-        // メモリ上のシフトデータ（クラウドと同期）
         let shiftCache = {}; 
+        let isCloudLoaded = false;
 
         function getYearMonthKey(y, m) {
             return `${y}-${String(m).padStart(2, '0')}`;
         }
 
-        // クラウド（スプレッドシート）からデータを読み込む
         async function fetchShiftsFromCloud() {
             setSyncStatus("loading", "クラウド読込中...");
             try {
@@ -437,6 +435,7 @@
                     shiftCache[item.yearMonth][item.day] = item.type;
                 });
 
+                isCloudLoaded = true;
                 setSyncStatus("synced", "クラウド同期完了");
             } catch (err) {
                 console.error("Cloud fetch error:", err);
@@ -445,7 +444,6 @@
             renderTable();
         }
 
-        // クラウド（スプレッドシート）へデータを保存する
         async function saveShiftsToCloud(targetY, targetM, shiftsArray) {
             setSyncStatus("loading", "保存中...");
             const ymKey = getYearMonthKey(targetY, targetM);
@@ -458,7 +456,7 @@
             try {
                 await fetch(GAS_API_URL, {
                     method: "POST",
-                    mode: "no-cors", // CORS制限回避
+                    mode: "no-cors",
                     headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify(payload)
                 });
@@ -546,7 +544,6 @@
             updateSummaryAndChart();
         }
 
-        // シフト変更時にクラウド（スプレッドシート）へ即時自動保存
         function updateShiftType(day, newType) {
             const ymKey = getYearMonthKey(currentYear, currentMonth);
             if (!shiftCache[ymKey]) {
@@ -557,7 +554,6 @@
             renderTable();
             updateSummaryAndChart();
 
-            // クラウドへ送信
             const currentShifts = getCurrentShifts();
             saveShiftsToCloud(currentYear, currentMonth, currentShifts);
         }
@@ -701,7 +697,6 @@
             });
         }
 
-        // CSVモーダルを開く
         function openCsvModal() {
             document.getElementById('modalMonthTitle').innerText = `${currentYear}年${currentMonth}月`;
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
@@ -723,7 +718,6 @@
             document.getElementById('csvModal').classList.add('hidden');
         }
 
-        // CSVエクスポート実行
         function executeCsvExport() {
             const startDay = parseInt(document.getElementById('csvStartDay').value);
             const endDay = parseInt(document.getElementById('csvEndDay').value);
@@ -797,7 +791,7 @@
             window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
         }
 
-        window.onload = function() {
+        window.onload = async function() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
                 document.documentElement.classList.add('dark');
@@ -808,8 +802,8 @@
             document.getElementById('selectMonth').value = currentMonth;
             updateLabels();
 
-            // 起動時にスプレッドシートから最新データを取得
-            fetchShiftsFromCloud();
+            // 起動時にスプレッドシートからデータを取得完了してからテーブルを描画
+            await fetchShiftsFromCloud();
         };
     </script>
 </body>
