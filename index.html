@@ -36,7 +36,7 @@
                     Shift Sync Dashboard Pro
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    高精度祝日判定・月連動テーブルタイトル・月切替ボタン搭載
+                    内閣府準拠祝日マスター内蔵・本格ワークサマリー・月切替ボタン搭載
                 </p>
             </div>
 
@@ -149,12 +149,12 @@
                 </div>
             </div>
 
-            <!-- Right Side: Shift Table & Direct Editor (7 Cols) -->
+            <!-- Right Side: Shift Table (7 Cols) -->
             <div class="lg:col-span-7 space-y-6">
                 <div class="glass-effect border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-xl">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                         <h2 class="text-base font-bold flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-days text-indigo-600 dark:text-indigo-400"></i> <span id="tableTitleLabel">2026年11月</span> シフト一覧 & 直接編集
+                            <i class="fa-solid fa-calendar-days text-indigo-600 dark:text-indigo-400"></i> <span id="tableTitleLabel">2026年11月</span> シフト一覧
                         </h2>
                         <select id="filterType" onchange="renderTable()" class="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
                             <option value="all">すべてのシフト</option>
@@ -208,54 +208,45 @@
             "有休"
         ];
 
-        // 高精度・完全対応の日本の祝日判定関数（天文計算ベースの春分・秋分対応）
+        // 内閣府公式カレンダー準拠：2026年〜2030年 完全祝日マスター
+        const HOLIDAY_MASTER = {
+            // 2026年
+            "2026-1-1": "元日", "2026-1-12": "成人の日", "2026-2-11": "建国記念の日", "2026-2-23": "天皇誕生日",
+            "2026-3-20": "春分の日", "2026-4-29": "昭和の日", "2026-5-3": "憲法記念日", "2026-5-4": "みどりの日",
+            "2026-5-5": "こどもの日", "2026-5-6": "振替休日", "2026-7-20": "海の日", "2026-8-11": "山の日",
+            "2026-9-21": "敬老の日", "2026-9-22": "国民の休日", "2026-9-23": "秋分の日", "2026-10-12": "スポーツの日",
+            "2026-11-3": "文化の日", "2026-11-23": "勤労感謝の日",
+
+            // 2027年
+            "2027-1-1": "元日", "2027-1-11": "成人の日", "2027-2-11": "建国記念の日", "2027-2-23": "天皇誕生日",
+            "2027-3-21": "春分の日", "2027-3-22": "振替休日", "2027-4-29": "昭和の日", "2027-5-3": "憲法記念日",
+            "2027-5-4": "みどりの日", "2027-5-5": "こどもの日", "2027-7-19": "海の日", "2027-8-11": "山の日",
+            "2027-9-20": "敬老の日", "2027-9-23": "秋分の日", "2027-10-11": "スポーツの日",
+            "2027-11-3": "文化の日", "2027-11-23": "勤労感謝の日",
+
+            // 2028年
+            "2028-1-1": "元日", "2028-1-10": "成人の日", "2028-2-11": "建国記念の日", "2028-2-23": "天皇誕生日",
+            "2028-3-20": "春分の日", "2028-4-29": "昭和の日", "2028-5-3": "憲法記念日", "2028-5-4": "みどりの日",
+            "2028-5-5": "こどもの日", "2028-7-17": "海の日", "2028-8-11": "山の日", "2028-9-18": "敬老の日",
+            "2028-9-22": "秋分の日", "2028-10-9": "スポーツの日", "2028-11-3": "文化の日", "2028-11-23": "勤労感謝の日",
+
+            // 2029年
+            "2029-1-1": "元日", "2029-1-8": "成人の日", "2029-2-11": "建国記念の日", "2029-2-12": "振替休日",
+            "2029-2-23": "天皇誕生日", "2029-3-20": "春分の日", "2029-4-29": "昭和の日", "2029-4-30": "振替休日",
+            "2029-5-3": "憲法記念日", "2029-5-4": "みどりの日", "2029-5-5": "こどもの日", "2029-7-16": "海の日",
+            "2029-8-11": "山の日", "2029-9-17": "敬老の日", "2029-9-23": "秋分の日", "2029-9-24": "振替休日",
+            "2029-10-8": "スポーツの日", "2029-11-3": "文化の日", "2029-11-23": "勤労感謝の日",
+
+            // 2030年
+            "2030-1-1": "元日", "2030-1-14": "成人の日", "2030-2-11": "建国記念の日", "2030-2-23": "天皇誕生日",
+            "2030-3-20": "春分の日", "2030-4-29": "昭和の日", "2030-5-3": "憲法記念日", "2030-5-4": "みどりの日",
+            "2030-5-5": "こどもの日", "2030-5-6": "振替休日", "2030-7-15": "海の日", "2030-8-11": "山の日",
+            "2030-8-12": "振替休日", "2030-9-16": "敬老の日", "2030-9-23": "秋分の日", "2030-10-14": "スポーツの日",
+            "2030-11-3": "文化の日", "2030-11-4": "振替休日", "2030-11-23": "勤労感謝の日"
+        };
+
         function getJapaneseHoliday(year, month, day) {
-            const d = new Date(year, month - 1, day);
-            const w = d.getDay(); // 0:日, 1:月...
-
-            // 固定祝日
-            if (month === 1 && day === 1) return "元日";
-            if (month === 2 && day === 11) return "建国記念の日";
-            if (month === 2 && day === 23) return "天皇誕生日";
-            if (month === 4 && day === 29) return "昭和の日";
-            if (month === 5 && day === 3) return "憲法記念日";
-            if (month === 5 && day === 4) return "みどりの日";
-            if (month === 5 && day === 5) return "こどもの日";
-            if (month === 8 && day === 11) return "山の日";
-            if (month === 11 && day === 3) return "文化の日";
-            if (month === 11 && day === 23) return "勤労感謝の日";
-
-            // 特例・変動の固定対応（2026年等）
-            if (year === 2026 && month === 7 && day === 20) return "海の日";
-            if (year === 2026 && month === 10 && day === 10) return "スポーツの日";
-
-            // 春分の日計算（2026〜2030年対応の天文計算式）
-            if (month === 3) {
-                let vernal = Math.floor(20.8431 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
-                if (day === vernal) return "春分の日";
-            }
-            // 秋分の日計算
-            if (month === 9) {
-                let autumn = Math.floor(23.2488 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
-                if (day === autumn) return "秋分の日";
-            }
-
-            // ハッピーマンデー制度
-            let weekNum = Math.ceil(day / 7);
-            if (month === 1 && w === 1 && weekNum === 2) return "成人の日";
-            if (month === 7 && w === 1 && weekNum === 3 && year !== 2026) return "海の日";
-            if (month === 9 && w === 1 && weekNum === 3) return "敬老の日";
-            if (month === 10 && w === 1 && weekNum === 2 && year !== 2026) return "スポーツの日";
-
-            // 振替休日判定（日曜が祝日の場合、直後の平日）
-            if (w === 1) {
-                const prevDate = new Date(year, month - 1, day - 1);
-                if (getJapaneseHoliday(prevDate.getFullYear(), prevDate.getMonth() + 1, prevDate.getDate())) {
-                    return "振替休日";
-                }
-            }
-
-            return null;
+            return HOLIDAY_MASTER[`${year}-${month}-${day}`] || null;
         }
 
         function generateDefaultMonthData(year, month) {
@@ -285,10 +276,15 @@
             return `registered_${currentYear}_${currentMonth}`;
         }
 
+        // 保存データ取得時に、古いキャッシュがあっても最新祝日情報をマージする
         function getCurrentShifts() {
             const stored = localStorage.getItem(getStorageKey());
             if (stored) {
-                return JSON.parse(stored);
+                let parsed = JSON.parse(stored);
+                parsed.forEach(item => {
+                    item.holiday = getJapaneseHoliday(currentYear, currentMonth, item.day);
+                });
+                return parsed;
             }
             const initial = generateDefaultMonthData(currentYear, currentMonth);
             localStorage.setItem(getStorageKey(), JSON.stringify(initial));
