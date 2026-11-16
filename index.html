@@ -18,8 +18,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; }
-        .glass-effect { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); }
-        .dark .glass-effect { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); }
+        .glass-effect { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(16px); }
+        .dark .glass-effect { background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(16px); }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen antialiased p-4 sm:p-6 lg:p-8 transition-colors duration-300">
@@ -30,13 +30,13 @@
         <header class="glass-effect border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider mb-1">
-                    <i class="fa-solid fa-sparkles"></i> Team Operation & Shift Sync
+                    <i class="fa-solid fa-sparkles"></i> Team Operation & Shift Sync Pro
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
                     Shift Sync Dashboard Pro
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    詳細テレワーク分類・安全確認プロンプト・カレンダー直接連携
+                    テレワーク個別分類（早・遅・夜）・確認プロンプト搭載
                 </p>
             </div>
 
@@ -145,9 +145,9 @@
                         <select id="filterType" onchange="renderTable()" class="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
                             <option value="all">すべてのシフト</option>
                             <option value="未選択">未選択</option>
-                            <option value="早">早番</option>
-                            <option value="遅">遅番</option>
-                            <option value="夜">夜勤</option>
+                            <option value="早（8:00～17:00）">早番</option>
+                            <option value="遅（13:00～22:00）">遅番</option>
+                            <option value="夜（21:30～8:30）">夜勤</option>
                             <option value="明け">明け</option>
                             <option value="早（テレワーク）">早(テレワーク)</option>
                             <option value="遅（テレワーク）">遅(テレワーク)</option>
@@ -481,7 +481,7 @@
                 `📅【${currentYear}年${currentMonth}月 チームシフトダッシュボード】\n` +
                 `今月のシフト表とワークサマリーが更新されました。\n` +
                 `確認やGoogleカレンダーへの登録はこちらから行えます！\n\n` +
-                shareUrl;
+                `🔗 ` + shareUrl;
 
             window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
         }
