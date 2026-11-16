@@ -36,7 +36,7 @@
                     Shift Sync Dashboard Pro
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    本格ワークサマリー・祝日完全対応・月切替ボタン搭載
+                    高精度祝日判定・月連動テーブルタイトル・月切替ボタン搭載
                 </p>
             </div>
 
@@ -154,7 +154,7 @@
                 <div class="glass-effect border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-xl">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                         <h2 class="text-base font-bold flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-days text-indigo-600 dark:text-indigo-400"></i> シフト一覧 & ダッシュボード直接編集
+                            <i class="fa-solid fa-calendar-days text-indigo-600 dark:text-indigo-400"></i> <span id="tableTitleLabel">2026年11月</span> シフト一覧 & 直接編集
                         </h2>
                         <select id="filterType" onchange="renderTable()" class="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
                             <option value="all">すべてのシフト</option>
@@ -208,7 +208,7 @@
             "有休"
         ];
 
-        // 完璧な日本の祝日判定関数
+        // 高精度・完全対応の日本の祝日判定関数（天文計算ベースの春分・秋分対応）
         function getJapaneseHoliday(year, month, day) {
             const d = new Date(year, month - 1, day);
             const w = d.getDay(); // 0:日, 1:月...
@@ -221,21 +221,22 @@
             if (month === 5 && day === 3) return "憲法記念日";
             if (month === 5 && day === 4) return "みどりの日";
             if (month === 5 && day === 5) return "こどもの日";
-            if (month === 7 && day === 20 && year === 2026) return "海の日";
             if (month === 8 && day === 11) return "山の日";
-            if (month === 9 && day === 23) return "秋分の日";
-            if (month === 10 && day === 10 && year === 2026) return "スポーツの日";
             if (month === 11 && day === 3) return "文化の日";
             if (month === 11 && day === 23) return "勤労感謝の日";
 
-            // 春分の日計算（2026〜2030年）
+            // 特例・変動の固定対応（2026年等）
+            if (year === 2026 && month === 7 && day === 20) return "海の日";
+            if (year === 2026 && month === 10 && day === 10) return "スポーツの日";
+
+            // 春分の日計算（2026〜2030年対応の天文計算式）
             if (month === 3) {
-                let vernal = (year === 2026 || year === 2030) ? 20 : 21;
+                let vernal = Math.floor(20.8431 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
                 if (day === vernal) return "春分の日";
             }
             // 秋分の日計算
             if (month === 9) {
-                let autumn = (year === 2027) ? 23 : 22;
+                let autumn = Math.floor(23.2488 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
                 if (day === autumn) return "秋分の日";
             }
 
@@ -246,7 +247,7 @@
             if (month === 9 && w === 1 && weekNum === 3) return "敬老の日";
             if (month === 10 && w === 1 && weekNum === 2 && year !== 2026) return "スポーツの日";
 
-            // 振替休日判定（前日が日曜かつ祝日の場合）
+            // 振替休日判定（日曜が祝日の場合、直後の平日）
             if (w === 1) {
                 const prevDate = new Date(year, month - 1, day - 1);
                 if (getJapaneseHoliday(prevDate.getFullYear(), prevDate.getMonth() + 1, prevDate.getDate())) {
@@ -303,10 +304,16 @@
             localStorage.setItem(getRegisteredKey(), JSON.stringify(ids));
         }
 
+        function updateLabels() {
+            const labelText = `${currentYear}年${currentMonth}月`;
+            document.getElementById('summaryTitleLabel').innerText = labelText;
+            document.getElementById('tableTitleLabel').innerText = labelText;
+        }
+
         function changeMonthYear() {
             currentYear = parseInt(document.getElementById('selectYear').value);
             currentMonth = parseInt(document.getElementById('selectMonth').value);
-            document.getElementById('summaryTitleLabel').innerText = `${currentYear}年${currentMonth}月`;
+            updateLabels();
             renderTable();
             updateSummaryAndChart();
         }
@@ -326,7 +333,7 @@
 
             document.getElementById('selectYear').value = currentYear;
             document.getElementById('selectMonth').value = currentMonth;
-            document.getElementById('summaryTitleLabel').innerText = `${currentYear}年${currentMonth}月`;
+            updateLabels();
             renderTable();
             updateSummaryAndChart();
         }
@@ -338,8 +345,7 @@
             
             document.getElementById('selectYear').value = currentYear;
             document.getElementById('selectMonth').value = currentMonth;
-            document.getElementById('summaryTitleLabel').innerText = `${currentYear}年${currentMonth}月`;
-            
+            updateLabels();
             renderTable();
             updateSummaryAndChart();
         }
@@ -604,8 +610,7 @@
             
             document.getElementById('selectYear').value = currentYear;
             document.getElementById('selectMonth').value = currentMonth;
-            document.getElementById('summaryTitleLabel').innerText = `${currentYear}年${currentMonth}月`;
-            
+            updateLabels();
             renderTable();
         };
     </script>
