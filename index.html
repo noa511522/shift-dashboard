@@ -117,8 +117,8 @@
                 <button onclick="shareToLine()" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all hover:-translate-y-0.5 flex items-center gap-2">
                     <i class="fa-brands fa-line text-lg"></i> LINE共有
                 </button>
-                <button onclick="bulkRegisterGCal()" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg shadow-indigo-600/25 transition-all hover:-translate-y-0.5 flex items-center gap-2">
-                    <i class="fa-solid fa-file-arrow-down"></i> カレンダー一括登録 (CSV)
+                <button onclick="openCsvModal()" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg shadow-indigo-600/25 transition-all hover:-translate-y-0.5 flex items-center gap-2">
+                    <i class="fa-solid fa-file-arrow-down"></i> シフト一括登録 (CSV)
                 </button>
             </div>
         </header>
@@ -162,7 +162,6 @@
                             <div id="statWorkHours" class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1.5 tracking-tight">0h</div>
                         </div>
 
-                        <!-- 早番回数 -->
                         <div class="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:border-amber-300 dark:hover:border-amber-700 transition-all">
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500"></div>
                             <div class="flex items-center justify-between">
@@ -174,7 +173,6 @@
                             <div id="statEarlyCount" class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 mt-1.5 tracking-tight">0回</div>
                         </div>
 
-                        <!-- 遅番回数 -->
                         <div class="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:border-orange-300 dark:hover:border-orange-700 transition-all">
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-orange-500"></div>
                             <div class="flex items-center justify-between">
@@ -186,7 +184,6 @@
                             <div id="statLateCount" class="text-2xl sm:text-3xl font-black text-orange-600 dark:text-orange-400 mt-1.5 tracking-tight">0回</div>
                         </div>
 
-                        <!-- 夜勤回数 -->
                         <div class="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:border-violet-300 dark:hover:border-violet-700 transition-all">
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-violet-600"></div>
                             <div class="flex items-center justify-between">
@@ -198,7 +195,6 @@
                             <div id="statNightCount" class="text-2xl sm:text-3xl font-black text-violet-600 dark:text-violet-400 mt-1.5 tracking-tight">0回</div>
                         </div>
 
-                        <!-- テレワーク日数 -->
                         <div class="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:border-cyan-300 dark:hover:border-cyan-700 transition-all">
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-cyan-500"></div>
                             <div class="flex items-center justify-between">
@@ -210,7 +206,6 @@
                             <div id="statTeleworkCount" class="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400 mt-1.5 tracking-tight">0日</div>
                         </div>
 
-                        <!-- 有休取得 -->
                         <div class="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:border-pink-300 dark:hover:border-pink-700 transition-all">
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-pink-500"></div>
                             <div class="flex items-center justify-between">
@@ -222,7 +217,6 @@
                             <div id="statPaidLeave" class="text-2xl sm:text-3xl font-black text-pink-600 dark:text-pink-400 mt-1.5 tracking-tight">0日</div>
                         </div>
 
-                        <!-- 公休・休み -->
                         <div class="bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:border-emerald-300 dark:hover:border-emerald-700 transition-all">
                             <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
                             <div class="flex items-center justify-between">
@@ -243,16 +237,6 @@
                         <div class="w-full h-[210px] flex justify-center relative">
                             <canvas id="shiftDonutChart"></canvas>
                         </div>
-                    </div>
-
-                    <!-- Duplicate Guard Reset & Info -->
-                    <div class="pt-2 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                            <i class="fa-solid fa-shield-halved text-emerald-500"></i> 二重登録ガード有効
-                        </span>
-                        <button onclick="resetRegisteredStatus()" class="text-xs text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 font-bold px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition-colors">
-                            <i class="fa-solid fa-rotate-left mr-1"></i> 登録履歴リセット
-                        </button>
                     </div>
                 </div>
             </div>
@@ -291,7 +275,6 @@
                                     <th class="p-3.5">日付</th>
                                     <th class="p-3.5">曜日</th>
                                     <th class="p-3.5">シフト種別 (変更可)</th>
-                                    <th class="p-3.5 text-center">Googleカレンダー</th>
                                 </tr>
                             </thead>
                             <tbody id="shiftTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/70 text-slate-800 dark:text-slate-100 text-xs sm:text-sm">
@@ -304,6 +287,57 @@
 
         </div>
 
+    </div>
+
+    <!-- CSV Export Range Modal -->
+    <div id="csvModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                <h3 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-arrow-down text-indigo-600 dark:text-indigo-400"></i> CSVエクスポート範囲の指定
+                </h3>
+                <button onclick="closeCsvModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-xs text-slate-600 dark:text-slate-300">
+                    <span id="modalMonthTitle" class="font-bold text-indigo-600 dark:text-indigo-400">2026年11月</span> の中で、カレンダーに登録したい日付の範囲を選んでください。
+                </p>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">開始日</label>
+                        <select id="csvStartDay" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <!-- Dynamic Options -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">終了日</label>
+                        <select id="csvEndDay" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <!-- Dynamic Options -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none bg-slate-100/80 dark:bg-slate-900/80 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" id="csvExcludeOff" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">「休み」「有休」の日はCSVに含めない（省く）</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button onclick="closeCsvModal()" class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                    キャンセル
+                </button>
+                <button onclick="executeCsvExport()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-lg shadow-indigo-600/25 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-download"></i> CSVをダウンロード
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript Logic -->
@@ -378,10 +412,6 @@
             return `shifts_${currentYear}_${currentMonth}`;
         }
 
-        function getRegisteredKey() {
-            return `registered_${currentYear}_${currentMonth}`;
-        }
-
         function getCurrentShifts() {
             const stored = localStorage.getItem(getStorageKey());
             if (stored) {
@@ -394,15 +424,6 @@
             const initial = generateDefaultMonthData(currentYear, currentMonth);
             localStorage.setItem(getStorageKey(), JSON.stringify(initial));
             return initial;
-        }
-
-        function getRegisteredIds() {
-            const stored = localStorage.getItem(getRegisteredKey());
-            return stored ? JSON.parse(stored) : [];
-        }
-
-        function saveRegisteredIds(ids) {
-            localStorage.setItem(getRegisteredKey(), JSON.stringify(ids));
         }
 
         function updateLabels() {
@@ -466,15 +487,11 @@
             const tbody = document.getElementById('shiftTableBody');
             const filter = document.getElementById('filterType').value;
             const shifts = getCurrentShifts();
-            const registeredIds = getRegisteredIds();
             
             tbody.innerHTML = '';
             
             shifts.forEach(item => {
                 if (filter !== 'all' && !item.type.includes(filter)) return;
-
-                const shiftId = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(item.day).padStart(2, '0')}`;
-                const isRegistered = registeredIds.includes(shiftId);
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50/90 dark:hover:bg-slate-800/60 transition-colors";
@@ -524,19 +541,6 @@
                         <select onchange="updateShiftType(${item.day}, this.value)" class="text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 ${badgeClass} cursor-pointer shadow-sm transition-all">
                             ${optionsHtml}
                         </select>
-                    </td>
-                    <td class="p-3.5 text-center">
-                        ${item.type === '未選択' ? 
-                            `<span class="text-xs font-bold text-slate-400 dark:text-slate-600">-</span>` :
-                            (isRegistered ? 
-                                `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100/80 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 rounded-lg text-xs font-bold border border-emerald-300 dark:border-emerald-800">
-                                    <i class="fa-solid fa-check-circle"></i> 登録済
-                                 </span>` :
-                                `<button onclick="registerSingle('${shiftId}', '${item.type}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 text-xs font-bold transition-all shadow-sm hover:shadow rounded-xl flex items-center justify-center gap-1 mx-auto">
-                                    <i class="fa-regular fa-calendar-plus"></i> 追加
-                                 </button>`
-                            )
-                        }
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -618,81 +622,74 @@
             });
         }
 
-        function registerSingle(dateStr, shiftType) {
-            const registeredIds = getRegisteredIds();
-            if (registeredIds.includes(dateStr)) {
-                alert("【二重登録ガード】この日のシフトはすでにカレンダー登録済みです！");
-                return;
+        // CSVモーダルを開く
+        function openCsvModal() {
+            document.getElementById('modalMonthTitle').innerText = `${currentYear}年${currentMonth}月`;
+            const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+            let startSelect = document.getElementById('csvStartDay');
+            let endSelect = document.getElementById('csvEndDay');
+            startSelect.innerHTML = '';
+            endSelect.innerHTML = '';
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                startSelect.innerHTML += `<option value="${i}">${i}日</option>`;
+                endSelect.innerHTML += `<option value="${i}" ${i === daysInMonth ? 'selected' : ''}>${i}日</option>`;
             }
 
-            const cleanDate = dateStr.replace(/-/g, '');
-            const title = encodeURIComponent(`[シフト] ${shiftType}`);
-            const details = encodeURIComponent(`Shift Sync Dashboardからの自動登録 (${shiftType})`);
-            
-            const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${cleanDate}/${cleanDate}&details=${details}`;
-            window.open(gcalUrl, '_blank');
-
-            registeredIds.push(dateStr);
-            saveRegisteredIds(registeredIds);
-            renderTable();
+            document.getElementById('csvModal').classList.remove('hidden');
         }
 
-        // CSV一括エクスポート方式（ポップアップ制限を回避して一発で全件登録可能）
-        function bulkRegisterGCal() {
-            const shifts = getCurrentShifts();
-            let activeShifts = shifts.filter(item => item.type !== '未選択');
+        function closeCsvModal() {
+            document.getElementById('csvModal').classList.add('hidden');
+        }
 
-            if (activeShifts.length === 0) {
-                alert("【お知らせ】登録対象となるシフト（未選択以外）がありません。");
+        // CSVエクスポート実行
+        function executeCsvExport() {
+            const startDay = parseInt(document.getElementById('csvStartDay').value);
+            const endDay = parseInt(document.getElementById('csvEndDay').value);
+            const excludeOff = document.getElementById('csvExcludeOff').checked;
+
+            if (startDay > endDay) {
+                alert("開始日は終了日より前の日付を選択してください。");
                 return;
             }
 
-            const confirmed = confirm(`【${currentYear}年${currentMonth}月】のシフト ${activeShifts.length}件をGoogleカレンダー用ファイル(CSV)として一括ダウンロードしますか？\n\n[使い方]\nダウンロードされたCSVをGoogleカレンダーの「インポート」から読み込ませるだけで、全シフトが一瞬でカレンダーに入ります！`);
-            if (!confirmed) return;
+            const shifts = getCurrentShifts();
+            let targetShifts = shifts.filter(item => {
+                if (item.day < startDay || item.day > endDay) return false;
+                if (item.type === '未選択') return false;
+                if (excludeOff && (item.type.includes('休み') || item.type.includes('有休'))) return false;
+                return true;
+            });
 
-            // Googleカレンダー形式のCSVヘッダー
+            if (targetShifts.length === 0) {
+                alert("指定された期間内に条件に合うシフトが見つかりませんでした。");
+                return;
+            }
+
             let csvContent = "\uFEFFSubject,Start Date,All Day Event,Description\r\n";
 
-            let registeredIds = getRegisteredIds();
-
-            activeShifts.forEach(item => {
-                const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(item.day).padStart(2, '0')}`;
-                // CSV用の日付フォーマット (MM/DD/YYYY または YYYY/MM/DD)
+            targetShifts.forEach(item => {
                 const formattedDate = `${currentYear}/${String(currentMonth).padStart(2, '0')}/${String(item.day).padStart(2, '0')}`;
-                
                 const subject = `"[シフト] ${item.type}"`;
                 const description = `"Shift Sync Dashboard 一括登録 (${item.type})"`;
 
                 csvContent += `${subject},${formattedDate},True,${description}\r\n`;
-
-                if (!registeredIds.includes(dateStr)) {
-                    registeredIds.push(dateStr);
-                }
             });
 
-            // CSVファイルとしてダウンロード実行
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `shift_calendar_${currentYear}_${currentMonth}.csv`;
+            a.download = `shift_${currentYear}_${currentMonth}_${startDay}to${endDay}.csv`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
 
-            saveRegisteredIds(registeredIds);
-            renderTable();
+            closeCsvModal();
 
-            alert(`【完了】${currentYear}年${currentMonth}月のシフトCSVファイルのダウンロードが完了しました！\n\n【次の手順】\n1. Googleカレンダー(PC版)を開く\n2. 画面右上の「歯車マーク(設定)」＞「設定」を開く\n3. 左メニューの「インポート/エクスポート」を選択\n4. ダウンロードしたCSVファイルを選んで「インポート」を押すだけで全件完了します！`);
-        }
-
-        function resetRegisteredStatus() {
-            const confirmed = confirm(`【実行前の確認】\n\n【${currentYear}年${currentMonth}月】のGoogleカレンダー登録履歴（二重登録ガードの記録）をリセットします。\n\n※この操作を行うと、この月の全シフトが未登録の状態になります。実行しますか？`);
-            if (!confirmed) return;
-
-            localStorage.removeItem(getRegisteredKey());
-            renderTable();
-            alert(`${currentYear}年${currentMonth}月の登録履歴をリセットしました。`);
+            alert(`【完了】${currentYear}年${currentMonth}月（${startDay}日〜${endDay}日）のシフトCSVファイルのダウンロードが完了しました！\n\nGoogleカレンダーの設定 ＞ インポート/エクスポート から読み込ませてご利用ください。`);
         }
 
         function toggleDarkMode() {
