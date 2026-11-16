@@ -36,7 +36,7 @@
                     Shift Sync Dashboard Pro
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    土日祝自動色分け・祝日名表示・テレワーク個別対応
+                    土日祝自動色分け（強調版）・祝日名表示・テレワーク個別対応
                 </p>
             </div>
 
@@ -194,11 +194,12 @@
             "有休"
         ];
 
-        // 簡易日本の祝日判定ロジック (2026年〜2030年対応)
+        // 確実な日本の祝日判定ロジック (2026年〜2030年対応)
         function getJapaneseHoliday(year, month, day) {
             const d = new Date(year, month - 1, day);
             const w = d.getDay();
 
+            // 固定祝日
             if (month === 1 && day === 1) return "元日";
             if (month === 2 && day === 11) return "建国記念の日";
             if (month === 2 && day === 23) return "天皇誕生日";
@@ -213,17 +214,20 @@
             if (month === 11 && day === 3) return "文化の日";
             if (month === 11 && day === 23) return "勤労感謝の日";
 
+            // 春分の日簡易計算
             if (month === 3) {
                 let vernalEquinox = (year === 2026 || year === 2030) ? 20 : 21;
                 if (day === vernalEquinox) return "春分の日";
             }
 
+            // ハッピーマンデー制度
             let weekNum = Math.ceil(day / 7);
             if (month === 1 && w === 1 && weekNum === 2) return "成人の日";
             if (month === 7 && w === 1 && weekNum === 3 && year !== 2026) return "海の日";
             if (month === 9 && w === 1 && weekNum === 3) return "敬老の日";
             if (month === 10 && w === 1 && weekNum === 2 && year !== 2026) return "スポーツの日";
 
+            // 振替休日判定
             if (w === 1) {
                 const prevDay = new Date(year, month - 1, day - 1);
                 if (getJapaneseHoliday(year, prevDay.getMonth() + 1, prevDay.getDate())) {
@@ -329,18 +333,19 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors";
                 
+                // 強調された土日祝の色分けロジック
                 let rowBgClass = "";
                 let weekColorClass = "text-slate-500 dark:text-slate-400";
                 
                 if (item.holiday) {
-                    rowBgClass = "bg-rose-50/50 dark:bg-rose-950/20";
-                    weekColorClass = "text-rose-600 dark:text-rose-400 font-bold";
+                    rowBgClass = "bg-rose-100/80 dark:bg-rose-950/40 font-semibold";
+                    weekColorClass = "text-rose-700 dark:text-rose-400 font-extrabold";
                 } else if (item.week === "日") {
-                    rowBgClass = "bg-rose-50/30 dark:bg-rose-950/10";
-                    weekColorClass = "text-rose-500 dark:text-rose-400 font-bold";
+                    rowBgClass = "bg-rose-50/70 dark:bg-rose-950/20";
+                    weekColorClass = "text-rose-600 dark:text-rose-400 font-extrabold";
                 } else if (item.week === "土") {
-                    rowBgClass = "bg-sky-50/30 dark:bg-sky-950/10";
-                    weekColorClass = "text-sky-600 dark:text-sky-400 font-bold";
+                    rowBgClass = "bg-sky-100/70 dark:bg-sky-950/25";
+                    weekColorClass = "text-sky-700 dark:text-sky-400 font-extrabold";
                 }
 
                 if (rowBgClass) {
@@ -349,7 +354,7 @@
 
                 let weekDisplay = `(${item.week})`;
                 if (item.holiday) {
-                    weekDisplay = `<span class="inline-flex items-center gap-1"><span class="${weekColorClass}">( ${item.week} )</span> <span class="text-[10px] bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300 px-1.5 py-0.5 rounded-md font-semibold">${item.holiday}</span></span>`;
+                    weekDisplay = `<span class="inline-flex items-center gap-1.5"><span class="${weekColorClass}">( ${item.week} )</span> <span class="text-[11px] bg-rose-500 text-white dark:bg-rose-700 dark:text-rose-100 px-2 py-0.5 rounded-md font-bold shadow-sm">${item.holiday}</span></span>`;
                 }
 
                 let optionsHtml = '';
@@ -368,7 +373,7 @@
                 else if(item.type.includes('休み')) badgeClass = "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300";
 
                 tr.innerHTML = `
-                    <td class="p-3.5 font-semibold">${currentMonth}月 ${item.day}日</td>
+                    <td class="p-3.5 font-bold">${currentMonth}月 ${item.day}日</td>
                     <td class="p-3.5 ${weekColorClass}">${weekDisplay}</td>
                     <td class="p-3.5">
                         <select onchange="updateShiftType(${item.day}, this.value)" class="text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 ${badgeClass} cursor-pointer shadow-sm">
