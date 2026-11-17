@@ -90,6 +90,8 @@
                 <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
                 <button onclick="openPdfModal()" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-2"><i class="fa-solid fa-file-pdf text-lg"></i> LINE用PDF出力</button>
                 <button onclick="openCsvModal()" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg shadow-indigo-600/25 transition-all flex items-center gap-2"><i class="fa-solid fa-file-arrow-down"></i> カレンダーCSV</button>
+                <!-- データ引継ぎ（バックアップ・復元）ボタンを追加 -->
+                <button onclick="openBackupModal()" class="bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-lg transition-all flex items-center gap-2"><i class="fa-solid fa-arrows-rotate"></i> データ引継ぎ</button>
             </div>
         </header>
 
@@ -199,14 +201,38 @@
         </div>
     </div>
 
-    <!-- PDF Range Select Modal (With YYYY Support) -->
+    <!-- データ引継ぎモーダル -->
+    <div id="backupModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                <h3 class="text-lg font-black flex items-center gap-2"><i class="fa-solid fa-arrows-rotate text-indigo-600"></i> データ引継ぎ・バックアップ</h3>
+                <button onclick="closeBackupModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-4 text-xs text-slate-600 dark:text-slate-300">
+                <div class="bg-indigo-50 dark:bg-indigo-950/40 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-900 space-y-2">
+                    <div class="font-black text-indigo-900 dark:text-indigo-200"><i class="fa-solid fa-cloud-arrow-up"></i> 1. データの書き出し（PC側）</div>
+                    <p>現在のシフトデータをファイル（.json）として保存します。LINE等でスマホへ送ってください。</p>
+                    <button onclick="exportDataJson()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl shadow transition">データをファイルに保存する</button>
+                </div>
+                <div class="bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-900 space-y-2">
+                    <div class="font-black text-emerald-900 dark:text-emerald-200"><i class="fa-solid fa-cloud-arrow-down"></i> 2. データの読み込み（スマホ側）</div>
+                    <p>書き出したファイル（.json）を選択すると、スマホ側にデータが即座に反映されます。</p>
+                    <input type="file" id="importFile" accept=".json" onchange="importDataJson(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                </div>
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="closeBackupModal()" class="px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Range Select Modal -->
     <div id="pdfModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
             <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                 <h3 class="text-lg font-black flex items-center gap-2"><i class="fa-solid fa-file-pdf text-emerald-600"></i> LINE用PDF出力（期間・年指定）</h3>
                 <button onclick="closePdfModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-xs text-slate-600 dark:text-slate-300">年（YYYY）をまたぐ期間や指定にも完全対応しています。</p>
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2 bg-slate-50 dark:bg-slate-900/50 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
                     <label class="block text-xs font-bold">開始日時</label>
@@ -438,7 +464,40 @@
             });
         }
 
-        // --- PDF Generation Modal & Logic (With YYYY Support) ---
+        // --- Data Backup / Import Logic ---
+        function openBackupModal() { document.getElementById('backupModal').classList.remove('hidden'); }
+        function closeBackupModal() { document.getElementById('backupModal').classList.add('hidden'); }
+
+        function exportDataJson() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(shiftStore));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `shift_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importDataJson(event) {
+            const fileReader = new FileReader();
+            if (event.target.files[0]) {
+                fileReader.readAsText(event.target.files[0], "UTF-8");
+                fileReader.onload = function(e) {
+                    try {
+                        const parsedData = JSON.parse(e.target.result);
+                        shiftStore = parsedData;
+                        localStorage.setItem('shift_store_local_v3', JSON.stringify(shiftStore));
+                        renderTable();
+                        alert("データの読み込みが完了しました！");
+                        closeBackupModal();
+                    } catch (error) {
+                        alert("ファイルの読み込みに失敗しました。正しいJSONファイルを選択してください。");
+                    }
+                };
+            }
+        }
+
+        // --- PDF Generation Modal & Logic ---
         function updatePdfDays(type) {
             const y = parseInt(document.getElementById(`pdf${type === 'start' ? 'Start' : 'End'}Year`).value);
             const m = parseInt(document.getElementById(`pdf${type === 'start' ? 'Start' : 'End'}Month`).value);
@@ -458,7 +517,6 @@
             document.getElementById('pdfEndMonth').value = currentMonth;
             updatePdfDays('start');
             updatePdfDays('end');
-            // デフォルトで末日までを選択
             const endDaySel = document.getElementById('pdfEndDay');
             endDaySel.value = endDaySel.options[endDaySel.options.length - 1].value;
             document.getElementById('pdfModal').classList.remove('hidden');
@@ -469,11 +527,9 @@
             const startY = parseInt(document.getElementById('pdfStartYear').value);
             const startM = parseInt(document.getElementById('pdfStartMonth').value);
             const startD = parseInt(document.getElementById('pdfStartDay').value);
-            
             const endY = parseInt(document.getElementById('pdfEndYear').value);
             const endM = parseInt(document.getElementById('pdfEndMonth').value);
             const endD = parseInt(document.getElementById('pdfEndDay').value);
-            
             closePdfModal();
 
             let targetShifts = [];
@@ -497,7 +553,6 @@
                 cursor.setDate(cursor.getDate() + 1);
             }
 
-            // 指定期間のサマリー集計
             let sumWorkDays = 0, sumWorkHours = 0, sumEarly = 0, sumLate = 0, sumNight = 0, sumTele = 0, sumOff = 0;
             targetShifts.forEach(s => {
                 if (s.rawType.includes('早')) { sumWorkDays++; sumWorkHours += 8; sumEarly++; }
@@ -507,7 +562,6 @@
                 if (s.rawType.includes('休み') || s.rawType.includes('有休')) sumOff++;
             });
 
-            // タイトルに年を含めるか判断（年をまたぐ場合は YYYY/MM/DD 表記）
             const periodTitle = (startY === endY) 
                 ? `${startY}年 ${startM}/${startD} 〜 ${endM}/${endD} シフト`
                 : `${startY}/${startM}/${startD} 〜 ${endY}/${endM}/${endD} シフト`;
@@ -523,33 +577,10 @@
                     <style>
                         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Noto+Sans+JP:wght@500;700;900&display=swap');
                         body { font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif; background: #f1f5f9; color: #0f172a; padding: 2rem; }
-                        
-                        .print-paper { 
-                            background: white; 
-                            border: 2px solid #cbd5e1; 
-                            border-radius: 1.25rem; 
-                            box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.15), 0 0 0 8px #ffffff;
-                            overflow: hidden;
-                        }
-                        
-                        .grid-table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            border: 1px solid #cbd5e1;
-                        }
-                        .grid-table th, .grid-table td {
-                            border: 1px solid #cbd5e1;
-                            padding: 8px 10px;
-                            font-size: 11px;
-                        }
-                        .grid-table th {
-                            background-color: #312e81;
-                            color: #ffffff;
-                            font-weight: 800;
-                            text-transform: uppercase;
-                            letter-spacing: 0.05em;
-                        }
-
+                        .print-paper { background: white; border: 2px solid #cbd5e1; border-radius: 1.25rem; box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.15), 0 0 0 8px #ffffff; overflow: hidden; }
+                        .grid-table { width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; }
+                        .grid-table th, .grid-table td { border: 1px solid #cbd5e1; padding: 8px 10px; font-size: 11px; }
+                        .grid-table th { background-color: #312e81; color: #ffffff; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
                         @media print { 
                             body { background: white; padding: 0; } 
                             .no-print { display: none !important; } 
